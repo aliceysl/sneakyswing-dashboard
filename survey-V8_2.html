@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Golf App Survey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+/* ── Design System Tokens (SwingLens) ── */
+:root {
+  --red-300:#FEF2F2; --red-500:#F8A282; --red-700:#EF4444;
+  --yellow-300:#FBF8EE; --yellow-500:#FFE99F; --yellow-700:#A88D37;
+  --green-300:#E8F3D8; --green-500:#B8D085; --green-700:#719342;
+  --gray-100:#F2F2F2; --gray-300:#CDCDCD; --gray-500:#828282; --gray-700:#4E4E4E;
+  --white:#FFFFFF; --black:#000000;
+  --brand-primary:var(--green-700);
+  --brand-secondary:var(--yellow-700);
+  --content-primary:var(--gray-700);
+  --content-secondary:var(--gray-500);
+  --border-default:var(--gray-300);
+  --bg-gray:var(--gray-100);
+  --bg-white:var(--white);
+  --font-family:'DM Sans',sans-serif;
+  --radius-sm:4px; --radius-md:5px; --radius-lg:8px; --radius-xl:16px; --radius-2xl:24px; --radius-full:9999px;
+  --spacing-1:4px; --spacing-2:8px; --spacing-3:12px; --spacing-4:16px;
+  --spacing-5:20px; --spacing-6:24px; --spacing-8:32px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-family);background:var(--gray-100);color:var(--content-primary);min-height:100vh;line-height:1.5;-webkit-font-smoothing:antialiased;font-size:16px}
+
+/* ── HEADER ── */
+.hdr{background:var(--green-700);padding:0 32px;height:64px;display:flex;align-items:center;position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:34px;height:34px;flex-shrink:0}
+.logo-text{font-family:var(--font-family);font-weight:700;font-size:20px;letter-spacing:-.02em;color:#fff;line-height:1}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 64px);max-width:1100px;margin:0 auto}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--white);border-right:1px solid var(--border-default);padding:24px 16px;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;display:flex;flex-direction:column;gap:0}
+.sb-about{background:var(--green-300);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:20px;border:1px solid var(--green-500)}
+.sb-about-title{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--green-700);margin-bottom:6px}
+.sb-about-body{font-size:13px;color:var(--gray-700);line-height:1.65}
+.sb-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--content-secondary);margin-bottom:10px}
+.step-list{display:flex;flex-direction:column;gap:2px}
+.step{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:var(--radius-lg);cursor:pointer;transition:background .15s;font-size:16px;color:var(--content-secondary);font-weight:400}
+.step:hover{background:var(--green-300)}
+.step.active{background:var(--green-300);color:var(--green-700);font-weight:600}
+.step.done{color:var(--content-secondary)}
+.step-n{width:28px;height:28px;border-radius:50%;border:1.5px solid var(--border-default);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;transition:all .2s;color:var(--content-secondary)}
+.step.active .step-n{background:var(--green-700);border-color:var(--green-700);color:#fff}
+.step.done .step-n{background:var(--green-300);border-color:var(--green-700);color:var(--green-700)}
+
+/* ── MAIN ── */
+.main{padding:28px 28px 64px}
+
+/* ── PROGRESS ── */
+.prog-row{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.prog-track{flex:1;height:4px;background:var(--white);border-radius:2px;overflow:hidden;border:1px solid var(--border-default)}
+.prog-fill{height:100%;background:var(--green-700);border-radius:2px;transition:width .5s cubic-bezier(.4,0,.2,1)}
+.prog-lbl{font-size:16px;color:var(--content-secondary);font-weight:600;white-space:nowrap}
+
+/* ── SECTION CARD ── */
+.sec{background:var(--white);border-radius:var(--radius-xl);padding:32px 36px;border:1px solid var(--border-default);display:none;animation:fs .22s ease}
+.sec.active{display:block}
+@keyframes fs{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--green-700);margin-bottom:8px}
+.heading{font-family:var(--font-family);font-size:26px;font-weight:700;color:var(--content-primary);margin-bottom:6px;line-height:1.25}
+.sub{font-size:16px;color:var(--content-secondary);margin-bottom:28px;padding-bottom:22px;border-bottom:1px solid var(--border-default);line-height:1.65}
+
+/* ── FIELDS ── */
+.field{margin-bottom:24px}
+.flabel{display:block;font-size:16px;font-weight:600;color:var(--content-primary);margin-bottom:10px}
+.flabel .req{color:var(--green-700);margin-left:2px}
+.fhint{font-size:14px;color:var(--content-secondary);font-weight:400;margin-left:6px}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+input[type=text],select{width:100%;padding:12px 16px;border:1px solid var(--border-default);border-radius:var(--radius-lg);font-family:var(--font-family);font-size:16px;color:var(--content-primary);background:var(--white);transition:border-color .15s;appearance:none}
+input[type=text]:focus,select:focus{outline:none;border-color:var(--green-700)}
+input[type=text]::placeholder{color:var(--content-secondary)}
+
+/* ── PILLS (choice cards) ── */
+.pills{display:flex;flex-wrap:wrap;gap:8px}
+.pill{padding:10px 20px;border:1px solid var(--border-default);border-radius:var(--radius-full);font-family:var(--font-family);font-size:16px;font-weight:500;cursor:pointer;user-select:none;transition:all .15s;color:var(--content-secondary);background:var(--white)}
+.pill:hover{border-color:var(--green-500);color:var(--green-700);background:var(--green-300)}
+.pill.sel{border-color:var(--green-700);background:var(--green-300);color:var(--green-700);font-weight:600}
+
+/* ── SLIDERS ── */
+.sl-wrap{display:flex;flex-direction:column;gap:8px}
+.sl-row{display:flex;align-items:center;gap:14px}
+input[type=range]{flex:1;height:4px;appearance:none;background:var(--gray-300);border-radius:2px;outline:none;cursor:pointer;transition:background .15s}
+input[type=range]::-webkit-slider-thumb{appearance:none;width:22px;height:22px;border-radius:50%;background:var(--green-700);border:2.5px solid var(--white);box-shadow:0 0 0 1.5px var(--green-700);cursor:pointer;transition:transform .1s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.12)}
+.sl-val{min-width:60px;text-align:right;font-size:18px;font-weight:700;color:var(--content-primary)}
+.sl-ticks{display:flex;justify-content:space-between;font-size:13px;color:var(--content-secondary);padding:0 2px}
+
+/* ── STACKED BAR ── */
+.bar-container{border:1px solid var(--border-default);border-radius:var(--radius-lg);background:var(--gray-100);overflow:hidden}
+.bar-track{height:52px;width:100%;position:relative;user-select:none}
+.bar-seg{height:100%;position:absolute;top:0;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;overflow:hidden;white-space:nowrap;color:rgba(255,255,255,.95);gap:3px}
+.bar-handle{position:absolute;right:-5px;top:0;width:10px;height:100%;cursor:col-resize;z-index:10;display:flex;align-items:center;justify-content:center}
+.bar-handle::after{content:'';width:3px;height:60%;background:rgba(255,255,255,0.7);border-radius:2px}
+.bar-empty{display:flex;align-items:center;justify-content:center;width:100%;font-size:16px;color:var(--content-secondary);height:52px}
+.bar-legend{padding:8px 12px;display:flex;flex-direction:column;gap:2px;border-top:1px solid var(--border-default);background:var(--white)}
+.leg-row{display:flex;align-items:center;gap:10px;padding:10px 10px;border-radius:var(--radius-lg);cursor:pointer;transition:background .12s;font-size:16px;color:var(--content-secondary)}
+.leg-row:hover{background:var(--green-300)}
+.leg-row.sel{color:var(--content-primary)}
+.leg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.leg-pct-val{min-width:38px;text-align:right;font-size:14px;font-weight:700;color:var(--content-primary)}
+.leg-check{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--border-default);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;transition:all .15s;color:transparent;background:var(--white)}
+.leg-row.sel .leg-check{background:var(--green-700);border-color:var(--green-700);color:#fff}
+
+/* ── CONDITIONAL ── */
+.cond{display:none}.cond.show{display:block}
+
+/* ── SEASON PANEL (child of season tab) — indent only, no bg fill ── */
+.season-panel{border-left:3px solid var(--green-500);padding-left:20px;margin-top:4px}
+
+/* ── MINI TABS ── */
+.mtabs{display:flex;gap:8px;margin-bottom:14px}
+.mtab{padding:9px 20px;font-family:var(--font-family);font-size:16px;font-weight:600;border:1px solid var(--border-default);border-radius:var(--radius-full);cursor:pointer;color:var(--content-secondary);background:var(--white);transition:all .15s}
+.mtab:hover{border-color:var(--green-500);color:var(--green-700)}
+.mtab.active{border-color:var(--green-700);background:var(--green-700);color:#fff}
+
+/* ── PLAN TABLE ── */
+.plan-tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:16px;margin-bottom:20px;border:1px solid var(--border-default);border-radius:var(--radius-xl);overflow:hidden}
+.plan-tbl th{padding:14px 16px;font-weight:700;font-size:13px;background:var(--gray-100);color:var(--content-secondary);text-align:left;border-bottom:1px solid var(--border-default)}
+.plan-tbl th:not(:first-child){text-align:center}
+.plan-tbl td{padding:13px 16px;border-bottom:1px solid var(--border-default);color:var(--content-secondary);vertical-align:top;line-height:1.5}
+.plan-tbl td:not(:first-child){text-align:center;color:var(--content-primary)}
+.plan-tbl tr:last-child td{border-bottom:none}
+.plan-tbl .fc{color:var(--content-secondary);font-size:15px}
+.badge{display:inline-block;padding:5px 14px;border-radius:var(--radius-full);font-size:13px;font-weight:700}
+.bt1{background:var(--gray-100);color:var(--content-secondary);border:1px solid var(--border-default)}
+.bt2{background:var(--green-300);color:var(--green-700);border:1px solid var(--green-500)}
+.bt3{background:var(--yellow-300);color:var(--yellow-700);border:1px solid var(--yellow-500)}
+.chk{color:var(--green-700);font-size:16px}
+.crs{color:var(--content-secondary)}
+
+/* ── COACH TABLE ── */
+.coach-tbl{width:100%;border-collapse:separate;border-spacing:0;font-size:15px;border:1px solid var(--border-default);border-radius:var(--radius-xl);overflow:hidden;margin-bottom:16px}
+.coach-tbl th{padding:14px 18px;font-weight:700;font-size:15px;text-align:left;border-bottom:1px solid var(--border-default)}
+.coach-tbl th:first-child{background:var(--gray-100);color:var(--content-secondary);width:160px}
+.coach-tbl th.c1h{background:var(--green-300);color:var(--green-700)}
+.coach-tbl th.c2h{background:var(--yellow-300);color:var(--yellow-700)}
+.coach-tbl td{padding:13px 18px;border-bottom:1px solid var(--border-default);color:var(--content-secondary);vertical-align:top;line-height:1.65;font-size:15px}
+.coach-tbl tr:last-child td{border-bottom:none}
+.coach-tbl td:first-child{background:var(--gray-100);color:var(--content-secondary)}
+.coach-tbl td.c1{background:#fbfef7;color:var(--content-primary)}
+.coach-tbl td.c2{background:#fefdf7;color:var(--content-primary)}
+
+/* ── PSM ── */
+.psm-section-lbl{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--content-secondary);margin:22px 0 10px}
+.psm-block{background:var(--gray-100);border-radius:var(--radius-lg);padding:18px 22px;border:1px solid var(--border-default)}
+.psm-item{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.psm-item:last-child{margin-bottom:0}
+.psm-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.psm-desc{font-size:16px;color:var(--content-secondary);flex:1;line-height:1.4}
+.psm-slider{flex:1.4}
+.psm-price{font-size:20px;font-weight:700;min-width:56px;text-align:right;color:var(--content-primary)}
+
+/* ── DIVIDER ── */
+.fdiv{height:1px;background:var(--border-default);margin:22px 0}
+.block-title{font-size:19px;font-weight:700;color:var(--content-primary);margin-bottom:4px}
+.block-sub{font-size:16px;color:var(--content-secondary);margin-bottom:18px}
+
+/* ── ADD OTHER ── */
+.add-other-btn{display:inline-flex;align-items:center;gap:6px;margin-top:8px;padding:9px 18px;border-radius:var(--radius-full);font-family:var(--font-family);font-size:16px;font-weight:600;cursor:pointer;background:var(--white);border:1px dashed var(--border-default);color:var(--content-secondary);transition:all .15s}
+.add-other-btn:hover{border-color:var(--green-700);color:var(--green-700)}
+.other-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+.other-row input{flex:1;font-size:16px;padding:10px 14px;border-radius:var(--radius-lg)}
+.cat-sub-body{border-left:3px solid var(--green-500);padding:8px 0 4px 16px;margin:0 0 4px 15px}
+.other-rm{background:transparent;border:none;color:var(--content-secondary);cursor:pointer;font-size:18px;padding:4px 8px;border-radius:var(--radius-lg);transition:color .12s}
+.other-rm:hover{color:var(--red-700)}
+
+/* ── NAV ── */
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:28px;padding-top:22px;border-top:1px solid var(--border-default)}
+.btn{padding:12px 28px;border-radius:var(--radius-full);font-family:var(--font-family);font-size:16px;font-weight:600;cursor:pointer;border:none;transition:all .15s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:var(--green-700);color:#fff}
+.btn-primary:hover{background:#618038}
+.btn-secondary{background:var(--white);color:var(--content-primary);border:1px solid var(--border-default)}
+.btn-secondary:hover{border-color:var(--content-secondary)}
+.btn-tertiary{background:transparent;color:var(--green-700);border:1px solid var(--green-700)}
+.btn-tertiary:hover{background:var(--green-300)}
+.btn-text{background:transparent;color:var(--green-700);padding:12px 16px;border:none}
+.btn-text:hover{background:var(--green-300);border-radius:var(--radius-full)}
+
+/* ── RESULTS ── */
+.res-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:22px}
+.res-card{background:var(--white);border-radius:var(--radius-xl);padding:18px;border:1px solid var(--border-default)}
+.res-title{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--content-secondary);margin-bottom:12px}
+.psm-sum{display:flex;flex-direction:column;gap:8px}
+.psm-sum-row{display:flex;align-items:center;gap:8px;font-size:15px}
+.psm-sum-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.psm-sum-lbl{flex:1;color:var(--content-secondary)}
+.psm-sum-val{font-weight:700;color:var(--content-primary);font-size:17px}
+
+/* ── SUCCESS ── */
+.success-wrap{text-align:center;padding:56px 24px}
+.success-icon{width:72px;height:72px;border-radius:50%;background:var(--green-300);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;animation:popIn .4s cubic-bezier(.175,.885,.32,1.275)}
+@keyframes popIn{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.success-h{font-size:30px;font-weight:700;color:var(--content-primary);margin-bottom:12px}
+.success-sub{font-size:16px;color:var(--content-secondary);max-width:400px;margin:0 auto 24px;line-height:1.7}
+.chips{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:16px}
+.chip{padding:9px 16px;border-radius:var(--radius-full);font-size:15px;font-weight:600;background:var(--green-300);color:var(--green-700);border:1px solid var(--green-500)}
+
+/* ── INFO CARDS ── */
+.info-cards-wrap{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px;padding:18px;background:var(--green-300);border-radius:var(--radius-xl);border:1px solid var(--green-500)}
+.info-card{background:var(--white);border-radius:var(--radius-lg);padding:16px;border:1px solid var(--border-default);display:flex;flex-direction:column;gap:10px}
+.info-card-header{display:flex;align-items:center;gap:10px}
+.info-card-icon{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.info-card-title{font-size:15px;font-weight:700;color:var(--content-primary);line-height:1.3}
+.info-card-list{list-style:disc;display:flex;flex-direction:column;gap:5px;padding:0 0 0 16px;margin:0}
+.info-card-list li{font-size:13px;color:var(--content-secondary);line-height:1.5}
+.info-card-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:2px}
+.info-card-tag{display:inline-flex;align-items:center;background:var(--green-300);color:var(--green-700);border:1px solid var(--green-500);border-radius:var(--radius-full);padding:4px 10px;font-size:11px;font-weight:700;line-height:1.3}
+.info-note-wrap{display:flex;flex-direction:column;gap:8px;margin-bottom:24px}
+.info-note{background:var(--gray-100);border-radius:var(--radius-lg);padding:12px 16px;border-left:3px solid var(--green-700);font-size:13px;color:var(--content-secondary);line-height:1.65}
+.info-note-label{font-weight:700;color:var(--content-primary);margin-right:6px}
+
+@media(max-width:820px){.info-cards-wrap{grid-template-columns:1fr}.layout{grid-template-columns:1fr}.sidebar{display:none}.main{padding:16px 16px 48px}.sec{padding:22px 22px}.two-col{grid-template-columns:1fr}.res-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <div class="logo-text">AI Golf App Survey</div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-about">
+      <div class="sb-about-title">About this survey</div>
+      <div style="display:flex;gap:6px;margin-bottom:8px">
+        <span style="display:inline-flex;align-items:center;background:var(--green-700);color:#fff;border-radius:var(--radius-full);padding:3px 10px;font-size:11px;font-weight:700">5–8 mins</span>
+        <span style="display:inline-flex;align-items:center;background:var(--green-700);color:#fff;border-radius:var(--radius-full);padding:3px 10px;font-size:11px;font-weight:700">Anonymous</span>
+      </div>
+      <div class="sb-about-body">We're developing an AI Golf App that analyzes your swing and delivers personalized feedback shaped by real coaches' expertise and teaching experience—not just generic AI suggestions.</div>
+    </div>
+    <div class="sb-label">Sections</div>
+    <div class="step-list">
+      <div class="step active" id="nav-1" onclick="goTo(1)">
+        <div class="step-n" id="sn-1">1</div>
+        <div>Demographics</div>
+      </div>
+      <div class="step" id="nav-2" onclick="goTo(2)">
+        <div class="step-n" id="sn-2">2</div>
+        <div>Skill Level &amp; Practice</div>
+      </div>
+      <div class="step" id="nav-3" onclick="goTo(3)">
+        <div class="step-n" id="sn-3">3</div>
+        <div>Spending</div>
+      </div>
+      <div class="step" id="nav-4" onclick="goTo(4)">
+        <div class="step-n" id="sn-4">4</div>
+        <div>Plan Subscription</div>
+      </div>
+      <div class="step" id="nav-5" onclick="goTo(5)">
+        <div class="step-n" id="sn-5">5</div>
+        <div>Coach AI Subscription</div>
+      </div>
+      <div class="step" id="nav-6" onclick="goTo(6)">
+        <div class="step-n" id="sn-6">6</div>
+        <div>Pay-Per-View</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- Progress -->
+    <div class="prog-row">
+      <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:16.7%"></div></div>
+      <div class="prog-lbl" id="prog-lbl">1 / 6</div>
+    </div>
+
+    <!-- ── PART 1 ── -->
+    <div class="sec active" id="sec-1">
+      <div class="eyebrow">Part 1 of 6</div>
+      <h2 class="heading">Demographics & background</h2>
+      <p class="sub">Tell us a little about yourself. All fields are required.</p>
+
+      <div class="field">
+        <label class="flabel">Biological sex <span class="req">*</span></label>
+        <div class="pills" id="g-sex">
+          <div class="pill" data-v="male"   onclick="pickOne('g-sex',this)">Male</div>
+          <div class="pill" data-v="female" onclick="pickOne('g-sex',this)">Female</div>
+          <div class="pill" data-v="na"     onclick="pickOne('g-sex',this)">Prefer not to say</div>
+        </div>
+      </div>
+
+      <div class="field two-col">
+        <div>
+          <label class="flabel">City <span class="req">*</span></label>
+          <input type="text" id="city" placeholder="e.g. San Francisco">
+        </div>
+        <div>
+          <label class="flabel">State <span class="req">*</span></label>
+          <select id="state">
+            <option value="">Select state…</option>
+            <option>Alabama</option><option>Alaska</option><option>Arizona</option><option>Arkansas</option>
+            <option>California</option><option>Colorado</option><option>Connecticut</option><option>Delaware</option>
+            <option>Florida</option><option>Georgia</option><option>Hawaii</option><option>Idaho</option>
+            <option>Illinois</option><option>Indiana</option><option>Iowa</option><option>Kansas</option>
+            <option>Kentucky</option><option>Louisiana</option><option>Maine</option><option>Maryland</option>
+            <option>Massachusetts</option><option>Michigan</option><option>Minnesota</option><option>Mississippi</option>
+            <option>Missouri</option><option>Montana</option><option>Nebraska</option><option>Nevada</option>
+            <option>New Hampshire</option><option>New Jersey</option><option>New Mexico</option><option>New York</option>
+            <option>North Carolina</option><option>North Dakota</option><option>Ohio</option><option>Oklahoma</option>
+            <option>Oregon</option><option>Pennsylvania</option><option>Rhode Island</option><option>South Carolina</option>
+            <option>South Dakota</option><option>Tennessee</option><option>Texas</option><option>Utah</option>
+            <option>Vermont</option><option>Virginia</option><option>Washington</option><option>West Virginia</option>
+            <option>Wisconsin</option><option>Wyoming</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field two-col">
+        <div>
+          <label class="flabel">Age <span class="req">*</span></label>
+          <div class="sl-wrap">
+            <div class="sl-row">
+              <input type="range" id="age-s" min="3" max="100" value="3" step="1" oninput="onAgeChange()">
+              <span class="sl-val" id="age-v">3</span>
+            </div>
+            <div class="sl-ticks"><span>3</span><span>100</span></div>
+          </div>
+        </div>
+        <div>
+          <label class="flabel">Years playing golf <span class="req">*</span></label>
+          <div class="sl-wrap">
+            <div class="sl-row">
+              <input type="range" id="yrs-s" min="0" max="3" value="0" step="1" oninput="onYrsChange()">
+              <span class="sl-val" id="yrs-v">&lt;1 yr</span>
+            </div>
+            <div class="sl-ticks"><span>&lt;1 yr</span><span id="yrs-max-lbl">3 yrs</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <span></span>
+        <button class="btn btn-primary" onclick="goTo(2)">Next →</button>
+      </div>
+    </div>
+
+    <!-- ── PART 2 ── -->
+    <div class="sec" id="sec-2">
+      <div class="eyebrow">Part 2 of 6</div>
+      <h2 class="heading">Skill level & practice habits</h2>
+      <p class="sub">Help us understand how you currently train and improve.</p>
+
+      <!-- Q1: Seasonal variation -->
+      <div class="field">
+        <label class="flabel">Does your practice frequency change by season? <span class="req">*</span></label>
+        <div class="pills" id="g-seasonal">
+          <div class="pill" data-v="no"  onclick="pickOne('g-seasonal',this);showSeasonalFreq(false)">Rarely changes</div>
+          <div class="pill" data-v="yes" onclick="pickOne('g-seasonal',this);showSeasonalFreq(true)">Yes, it varies</div>
+        </div>
+      </div>
+
+      <!-- "Rarely changes" → single frequency block -->
+      <div class="cond" id="freq-static">
+        <div class="field">
+          <label class="flabel">Practice frequency <span class="req">*</span></label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+            <div class="pills" id="g-freq-unit">
+              <div class="pill sel" data-v="week"  onclick="pickOne('g-freq-unit',this)">/week</div>
+              <div class="pill"     data-v="month" onclick="pickOne('g-freq-unit',this)">/month</div>
+              <div class="pill"     data-v="quarter" onclick="pickOne('g-freq-unit',this)">/quarter</div>
+              <div class="pill"     data-v="year"  onclick="pickOne('g-freq-unit',this)">/year</div>
+            </div>
+          </div>
+          <div class="sl-wrap">
+            <div class="sl-row">
+              <input type="range" id="freq-s" min="1" max="10" value="1" step="1" oninput="sv('freq-s','freq-v',v=>v+'×')">
+              <span class="sl-val" id="freq-v">1×</span>
+            </div>
+            <div class="sl-ticks"><span>1×</span><span>10×</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- "Yes, varies" → 4-season tabs -->
+      <div class="cond" id="freq-seasonal">
+        <div class="field">
+          <label class="flabel">Practice frequency by season <span class="req">*</span></label>
+          <div class="mtabs" style="margin-bottom:18px">
+            <div class="mtab active" id="seas-t-spring" onclick="switchSeasonTab('spring')">Spring</div>
+            <div class="mtab" id="seas-t-summer" onclick="switchSeasonTab('summer')">Summer</div>
+            <div class="mtab" id="seas-t-fall"   onclick="switchSeasonTab('fall')">Fall</div>
+            <div class="mtab" id="seas-t-winter" onclick="switchSeasonTab('winter')">Winter</div>
+          </div>
+          <!-- Spring -->
+          <div id="seas-p-spring">
+            <div class="season-panel">
+              
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+                <div class="pills" id="g-freq-spring-unit">
+                  <div class="pill sel" data-v="week"  onclick="pickOne('g-freq-spring-unit',this)">/week</div>
+                  <div class="pill"     data-v="month" onclick="pickOne('g-freq-spring-unit',this)">/month</div>
+                </div>
+              </div>
+              <div class="sl-wrap">
+                <div class="sl-row">
+                  <input type="range" id="freq-spring-s" min="1" max="10" value="1" step="1" oninput="sv('freq-spring-s','freq-spring-v',v=>v+'×')">
+                  <span class="sl-val" id="freq-spring-v">1×</span>
+                </div>
+                <div class="sl-ticks"><span>1×</span><span>10×</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Summer -->
+          <div id="seas-p-summer" style="display:none">
+            <div class="season-panel">
+              
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+                <div class="pills" id="g-freq-summer-unit">
+                  <div class="pill sel" data-v="week"  onclick="pickOne('g-freq-summer-unit',this)">/week</div>
+                  <div class="pill"     data-v="month" onclick="pickOne('g-freq-summer-unit',this)">/month</div>
+                </div>
+              </div>
+              <div class="sl-wrap">
+                <div class="sl-row">
+                  <input type="range" id="freq-summer-s" min="1" max="10" value="1" step="1" oninput="sv('freq-summer-s','freq-summer-v',v=>v+'×')">
+                  <span class="sl-val" id="freq-summer-v">1×</span>
+                </div>
+                <div class="sl-ticks"><span>1×</span><span>10×</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Fall -->
+          <div id="seas-p-fall" style="display:none">
+            <div class="season-panel">
+              
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+                <div class="pills" id="g-freq-fall-unit">
+                  <div class="pill sel" data-v="week"  onclick="pickOne('g-freq-fall-unit',this)">/week</div>
+                  <div class="pill"     data-v="month" onclick="pickOne('g-freq-fall-unit',this)">/month</div>
+                </div>
+              </div>
+              <div class="sl-wrap">
+                <div class="sl-row">
+                  <input type="range" id="freq-fall-s" min="1" max="10" value="1" step="1" oninput="sv('freq-fall-s','freq-fall-v',v=>v+'×')">
+                  <span class="sl-val" id="freq-fall-v">1×</span>
+                </div>
+                <div class="sl-ticks"><span>1×</span><span>10×</span></div>
+              </div>
+            </div>
+          </div>
+          <!-- Winter -->
+          <div id="seas-p-winter" style="display:none">
+            <div class="season-panel">
+              
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px">
+                <div class="pills" id="g-freq-winter-unit">
+                  <div class="pill sel" data-v="week"  onclick="pickOne('g-freq-winter-unit',this)">/week</div>
+                  <div class="pill"     data-v="month" onclick="pickOne('g-freq-winter-unit',this)">/month</div>
+                </div>
+              </div>
+              <div class="sl-wrap">
+                <div class="sl-row">
+                  <input type="range" id="freq-winter-s" min="1" max="10" value="1" step="1" oninput="sv('freq-winter-s','freq-winter-v',v=>v+'×')">
+                  <span class="sl-val" id="freq-winter-v">1×</span>
+                </div>
+                <div class="sl-ticks"><span>1×</span><span>10×</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="flabel">How do you practice? <span class="fhint">(select all that apply — drag % to adjust)</span><span class="req">*</span></label>
+        <div class="bar-container">
+          <div class="bar-track" id="prac-bar"><div class="bar-empty">Select categories below</div></div>
+          <div class="bar-legend" id="prac-leg"></div>
+        </div>
+      </div>
+
+      <div class="cond" id="cond-course">
+        <div class="fdiv"></div>
+        <div class="field">
+          <label class="flabel">Do you keep score when you play a round? <span class="req">*</span></label>
+          <div class="pills" id="g-score-yn">
+            <div class="pill" data-v="yes" onclick="pickOne('g-score-yn',this);showScoreInput(true)">Yes</div>
+            <div class="pill" data-v="no"  onclick="pickOne('g-score-yn',this);showScoreInput(false)">No</div>
+          </div>
+        </div>
+        <div class="cond" id="cond-score-input">
+          <div class="mtabs">
+            <div class="mtab active" id="mt-score" onclick="switchScoreTab('score')">18-hole score</div>
+            <div class="mtab" id="mt-hcp" onclick="switchScoreTab('hcp')">Handicap</div>
+          </div>
+          <div id="inp-score">
+            <label class="flabel">Average 18-hole score <span class="req">*</span></label>
+            <div class="sl-wrap">
+              <div class="sl-row">
+                <input type="range" id="score-s" min="64" max="161" value="90" step="1"
+                  oninput="sv('score-s','score-v',v=>+v<=64?'&lt;65':+v>=161?'&gt;160':v)">
+                <span class="sl-val" id="score-v">90</span>
+              </div>
+              <div class="sl-ticks"><span>&lt;65</span><span>&gt;160</span></div>
+            </div>
+          </div>
+          <div id="inp-hcp" style="display:none">
+            <label class="flabel">Handicap index <span class="req">*</span></label>
+            <div class="sl-wrap">
+              <div class="sl-row">
+                <input type="range" id="hcp-s" min="-6" max="55" value="10" step="1"
+                  oninput="sv('hcp-s','hcp-v',v=>+v<=-6?'+5':+v>=55?'&gt;54':+v<0?('+'+Math.abs(+v)):v)">
+                <span class="sl-val" id="hcp-v">10</span>
+              </div>
+              <div class="sl-ticks"><span>+5</span><span>&gt;54</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cond show" id="cond-level">
+        <div class="fdiv"></div>
+        <div class="field">
+          <label class="flabel">Current skill level <span class="req">*</span></label>
+          <div class="pills" id="g-level">
+            <div class="pill" data-v="beg" onclick="pickOne('g-level',this)">Beginner</div>
+            <div class="pill" data-v="imp" onclick="pickOne('g-level',this)">Improving</div>
+            <div class="pill" data-v="con" onclick="pickOne('g-level',this)">Consistent</div>
+            <div class="pill" data-v="cmp" onclick="pickOne('g-level',this)">Competitive</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn btn-text" onclick="goTo(1)">← Back</button>
+        <button class="btn btn-primary" onclick="goTo(3)">Next →</button>
+      </div>
+    </div>
+
+    <!-- ── PART 3 ── -->
+    <div class="sec" id="sec-3">
+      <div class="eyebrow">Part 3 of 6</div>
+      <h2 class="heading">Golf spending habits</h2>
+      <p class="sub">Help us understand how you allocate your golf budget.</p>
+
+      <!-- Mode toggle -->
+      <div style="display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-bottom:16px">
+        <span class="spend-mode-lbl" id="sml-drag" style="font-size:14px;font-weight:600;color:var(--green-700)">Drag %</span>
+        <button id="spend-mode-btn" onclick="toggleSpendMode()"
+          style="width:44px;height:24px;border-radius:12px;background:var(--gray-300);border:none;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0;padding:0">
+          <div id="spend-mode-thumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)"></div>
+        </button>
+        <span class="spend-mode-lbl" id="sml-amt" style="font-size:14px;font-weight:500;color:var(--content-secondary)">Enter $</span>
+      </div>
+
+      <!-- Drag / Amt hints -->
+      <div id="spend-hint-drag" style="font-size:13px;color:var(--content-secondary);margin-bottom:14px">Select categories, then drag the dividers on the bar to adjust proportions.</div>
+      <div id="spend-hint-amt" style="display:none;font-size:13px;color:var(--content-secondary);margin-bottom:14px">Select categories and enter the dollar amount for each. The bar and total will update automatically.</div>
+
+      <!-- Top-level bar — same structure as prac-bar -->
+      <div style="margin-bottom:12px">
+        <label class="flabel">Where do you spend on golf in the past 12 months? <span class="req">*</span></label>
+        <div class="bar-container" style="margin-top:8px">
+          <div class="bar-track" id="cat-bar"><div class="bar-empty">Select categories below</div></div>
+          <div class="bar-legend" id="cat-list">
+
+            <!-- Cat 0: Improvement -->
+            <div class="leg-row" id="cat-0-card" onclick="toggleCat(0)">
+              <div class="leg-check" id="cat-0-chk"></div>
+              <div class="leg-dot" style="background:#719342"></div>
+              <span style="flex:1">Improvement</span>
+              <div id="cat-0-amt-wrap" style="display:none;align-items:center;gap:4px" onclick="event.stopPropagation()">
+                <span style="font-size:14px;color:var(--content-secondary)">$</span>
+                <input type="number" min="0" step="1" placeholder="0" id="cat-0-ai" readonly
+                  style="width:90px;padding:5px 8px;font-size:14px;font-weight:600;border:1px solid var(--border-default);border-radius:var(--radius-lg);text-align:right;color:var(--content-secondary);background:var(--gray-100);font-family:var(--font-family);cursor:not-allowed">
+              </div>
+              <span class="leg-pct-val" id="cat-0-pv" style="display:none">—</span>
+              <span id="cat-0-arrow" onclick="event.stopPropagation();toggleSubBody(0)" style="font-size:13px;color:var(--content-secondary);margin-left:2px;padding:2px 4px;cursor:pointer;border-radius:4px" title="Collapse / Expand">▼</span>
+            </div>
+            <div class="cond cat-sub-body" id="cat-0-body">
+              <div class="bar-container" style="margin:4px 0">
+                <div class="bar-track" id="imp-bar"><div class="bar-empty">Select sub-categories below</div></div>
+                <div class="bar-legend" id="imp-leg"></div>
+              </div>
+              <div id="imp-others-wrap"></div>
+              <button class="add-other-btn" style="margin:4px 0 6px" onclick="addSubOther('imp',0)">+ Add other</button>
+            </div>
+
+            <!-- Cat 1: Playing -->
+            <div class="leg-row" id="cat-1-card" onclick="toggleCat(1)">
+              <div class="leg-check" id="cat-1-chk"></div>
+              <div class="leg-dot" style="background:#3a8fb5"></div>
+              <span style="flex:1">Playing</span>
+              <div id="cat-1-amt-wrap" style="display:none;align-items:center;gap:4px" onclick="event.stopPropagation()">
+                <span style="font-size:14px;color:var(--content-secondary)">$</span>
+                <input type="number" min="0" step="1" placeholder="0" id="cat-1-ai" readonly
+                  style="width:90px;padding:5px 8px;font-size:14px;font-weight:600;border:1px solid var(--border-default);border-radius:var(--radius-lg);text-align:right;color:var(--content-secondary);background:var(--gray-100);font-family:var(--font-family);cursor:not-allowed">
+              </div>
+              <span class="leg-pct-val" id="cat-1-pv" style="display:none">—</span>
+              <span id="cat-1-arrow" onclick="event.stopPropagation();toggleSubBody(1)" style="font-size:13px;color:var(--content-secondary);margin-left:2px;padding:2px 4px;cursor:pointer;border-radius:4px" title="Collapse / Expand">▼</span>
+            </div>
+            <div class="cond cat-sub-body" id="cat-1-body">
+              <div class="bar-container" style="margin:4px 0">
+                <div class="bar-track" id="play-bar"><div class="bar-empty">Select sub-categories below</div></div>
+                <div class="bar-legend" id="play-leg"></div>
+              </div>
+              <div id="play-others-wrap"></div>
+              <button class="add-other-btn" style="margin:4px 0 6px" onclick="addSubOther('play',1)">+ Add other</button>
+            </div>
+
+            <!-- Cat 2: Equipment -->
+            <div class="leg-row" id="cat-2-card" onclick="toggleCat(2)">
+              <div class="leg-check" id="cat-2-chk"></div>
+              <div class="leg-dot" style="background:#A88D37"></div>
+              <span style="flex:1">Equipment <span style="font-size:13px;font-weight:400;color:var(--content-secondary)">(clubs, balls, training aids, rangefinders…)</span></span>
+              <div id="cat-2-amt-wrap" style="display:none;align-items:center;gap:4px" onclick="event.stopPropagation()">
+                <span style="font-size:14px;color:var(--content-secondary)">$</span>
+                <input type="number" min="0" step="1" placeholder="0" id="cat-2-ai"
+                  style="width:90px;padding:5px 8px;font-size:14px;font-weight:600;border:1px solid var(--border-default);border-radius:var(--radius-lg);text-align:right;color:var(--content-primary);background:var(--white);font-family:var(--font-family)"
+                  oninput="onCatAmtInput(2)">
+              </div>
+              <span class="leg-pct-val" id="cat-2-pv" style="display:none">—</span>
+            </div>
+
+            <!-- Cat 3: Apparel & Lifestyle -->
+            <div class="leg-row" id="cat-3-card" onclick="toggleCat(3)">
+              <div class="leg-check" id="cat-3-chk"></div>
+              <div class="leg-dot" style="background:#8a60c8"></div>
+              <span style="flex:1">Apparel &amp; Lifestyle</span>
+              <div id="cat-3-amt-wrap" style="display:none;align-items:center;gap:4px" onclick="event.stopPropagation()">
+                <span style="font-size:14px;color:var(--content-secondary)">$</span>
+                <input type="number" min="0" step="1" placeholder="0" id="cat-3-ai"
+                  style="width:90px;padding:5px 8px;font-size:14px;font-weight:600;border:1px solid var(--border-default);border-radius:var(--radius-lg);text-align:right;color:var(--content-primary);background:var(--white);font-family:var(--font-family)"
+                  oninput="onCatAmtInput(3)">
+              </div>
+              <span class="leg-pct-val" id="cat-3-pv" style="display:none">—</span>
+            </div>
+
+            <!-- Cat 4: Golf Travel/Trip -->
+            <div class="leg-row" id="cat-4-card" onclick="toggleCat(4)">
+              <div class="leg-check" id="cat-4-chk"></div>
+              <div class="leg-dot" style="background:#c85a3a"></div>
+              <span style="flex:1">Golf Travel / Trip</span>
+              <div id="cat-4-amt-wrap" style="display:none;align-items:center;gap:4px" onclick="event.stopPropagation()">
+                <span style="font-size:14px;color:var(--content-secondary)">$</span>
+                <input type="number" min="0" step="1" placeholder="0" id="cat-4-ai"
+                  style="width:90px;padding:5px 8px;font-size:14px;font-weight:600;border:1px solid var(--border-default);border-radius:var(--radius-lg);text-align:right;color:var(--content-primary);background:var(--white);font-family:var(--font-family)"
+                  oninput="onCatAmtInput(4)">
+              </div>
+              <span class="leg-pct-val" id="cat-4-pv" style="display:none">—</span>
+            </div>
+
+          </div><!-- end #cat-list / bar-legend -->
+        </div><!-- end bar-container -->
+      </div>
+
+      <!-- Custom categories -->
+      <div id="custom-cats-wrap"></div>
+      <button class="add-other-btn" onclick="addCustomCat()">+ Add category</button>
+
+      <!-- Annual slider -->
+      <div class="field" style="margin-top:20px">
+        <label class="flabel">Approximate total golf spending in the past 12 months <span class="req">*</span></label>
+        <div class="sl-wrap">
+          <div class="sl-row">
+            <input type="range" id="annual-s" min="0" max="51000" step="500" value="0"
+              oninput="if(spendMode!=='amt') sv('annual-s','annual-v',fmtAnnual)"
+              style="width:100%">
+            <span class="sl-val" id="annual-v">$0</span>
+          </div>
+          <div class="sl-ticks"><span>$0</span><span>&gt;$50k</span></div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button class="btn btn-text" onclick="goTo(2)">← Back</button>
+        <button class="btn btn-primary" onclick="goTo(4)">Next →</button>
+      </div>
+    </div>
+
+    <!-- ── PART 4 ── Plan Subscription -->
+    <div class="sec" id="sec-4">
+      <div class="eyebrow">Part 4 of 6</div>
+      <h2 class="heading">Plan Subscription</h2>
+      <p class="sub">Monthly subscription to General AI Agent on the app — drag each slider to set your price thresholds. The four points must remain in ascending order.</p>
+
+      <!-- INFO CARDS -->
+      <div class="info-cards-wrap">
+        <div class="info-card">
+          <div class="info-card-title">General AI Agent</div>
+          <div class="info-card-tags"><span class="info-card-tag">Generic</span><span class="info-card-tag">Standardized</span><span class="info-card-tag">Everyday Practice</span></div>
+          <ul class="info-card-list">
+            <li>Completed in ~30 seconds</li>
+            <li>Automatically analyzes your swing (phases, speed, angles, common issues) and provides suggestions</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">Coach AI Agent</div>
+          <div class="info-card-tags"><span class="info-card-tag">Real-Time</span><span class="info-card-tag">Adaptive Guidance</span><span class="info-card-tag">Coach-Trained</span></div>
+          <ul class="info-card-list">
+            <li>Completed within seconds</li>
+            <li>Trained using real coaching examples and feedback</li>
+            <li>Learns the coach's decision-making, teaching priorities, and experience</li>
+            <li>Regularly reviewed and improved by the coach</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">Human Coach Analysis</div>
+          <div class="info-card-tags"><span class="info-card-tag">Expert Review</span><span class="info-card-tag">Personalized</span><span class="info-card-tag">Higher Cost</span></div>
+          <ul class="info-card-list">
+            <li>Personally reviewed by a coach (up to ~10 minutes)</li>
+            <li>May include voice feedback, annotations, and customized training advice</li>
+            <li>Takes into account more context (habits, recent practice, goals, etc.)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- NOTES -->
+      <div class="info-note-wrap">
+        <div class="info-note">
+          <span class="info-note-label">Pay-Per-View (PPV)</span>
+          Whether you use General AI Analysis, Coach AI, or Human Coach Feedback — if you are not subscribed, have insufficient credits, or the feature follows the coach's own pricing, each use will consume the corresponding number of credits.
+        </div>
+        <div class="info-note">
+          <span class="info-note-label">Credits</span>
+          Users can purchase additional credits at any time to use analysis and feedback features beyond their subscription allowance.
+        </div>
+      </div>
+
+      <!-- PLAN TABLE -->
+      <div class="block-title" style="margin-bottom:12px">Monthly subscription to General AI Agent</div>
+
+      <table class="plan-tbl">
+        <thead>
+          <tr>
+            <th class="fc">Feature</th>
+            <th><span class="badge bt1">Tier 1 · Free</span></th>
+            <th><span class="badge bt2">Tier 2</span></th>
+            <th><span class="badge bt3">Tier 3</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="fc">Credits / month</td>
+            <td style="font-size:13px;line-height:1.6">+2 / week<br><span style="color:var(--content-secondary)">Cap: 10</span></td>
+            <td style="font-size:13px;line-height:1.6">+2 / week<br>+10 / month<br><span style="color:var(--content-secondary)">Cap: 50</span></td>
+            <td><span class="chk">∞</span> Unlimited</td>
+          </tr>
+          <tr>
+            <td class="fc">General AI Agent analysis</td>
+            <td>1 credit / use</td>
+            <td>1 credit / use</td>
+            <td><span class="chk">∞</span> Unlimited</td>
+          </tr>
+          <tr>
+            <td class="fc">Coach AI Agent analysis<br><span class="fc" style="font-size:12px;font-weight:400">(credits set by coach)</span></td>
+            <td style="font-size:13px;color:var(--content-secondary)">Credits by coach's rules</td>
+            <td style="font-size:13px;color:var(--content-secondary)">Credits by coach's rules</td>
+            <td style="font-size:13px;line-height:1.55">First 3 free<br><span style="color:var(--content-secondary)">Extra uses credits</span></td>
+          </tr>
+          <tr>
+            <td class="fc">Coach PPV feedback<br><span class="fc" style="font-size:12px;font-weight:400">(up to 10 min)</span></td>
+            <td style="font-size:13px;color:var(--content-secondary)">Credits by coach's rules only</td>
+            <td style="font-size:13px;color:var(--content-secondary)">Coach's rules; can buy extra credits</td>
+            <td style="font-size:13px;color:var(--content-secondary)">Coach's rules; can buy extra credits</td>
+          </tr>
+          <tr>
+            <td class="fc">Report history</td>
+            <td>Latest 1 only</td>
+            <td><span class="chk">✓</span> Full access</td>
+            <td><span class="chk">✓</span> Full access</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mtabs">
+        <div class="mtab active" id="sub-t-t2" onclick="switchSubTab('t2')">Tier 2 pricing</div>
+        <div class="mtab" id="sub-t-t3" onclick="switchSubTab('t3')">Tier 3 pricing</div>
+      </div>
+      <div id="sub-p-t2"><div class="psm-block" id="psm-sub-t2"></div></div>
+      <div id="sub-p-t3" style="display:none"><div class="psm-block" id="psm-sub-t3"></div></div>
+
+      <div class="nav-row">
+        <button class="btn btn-text" onclick="goTo(3)">← Back</button>
+        <button class="btn btn-primary" onclick="goTo(5)">Next →</button>
+      </div>
+    </div>
+
+    <!-- ── PART 5 ── Coach AI Subscription -->
+    <div class="sec" id="sec-5">
+      <div class="eyebrow">Part 5 of 6</div>
+      <h2 class="heading">Coach AI Subscription</h2>
+      <p class="sub">Personalized coach digital twin — how much would you pay per month to subscribe to a specific coach's AI?</p>
+
+      <!-- INFO CARDS (same set) -->
+      <div class="info-cards-wrap">
+        <div class="info-card">
+          <div class="info-card-title">General AI Agent</div>
+          <div class="info-card-tags"><span class="info-card-tag">Generic</span><span class="info-card-tag">Standardized</span><span class="info-card-tag">Everyday Practice</span></div>
+          <ul class="info-card-list">
+            <li>Completed in ~30 seconds</li>
+            <li>Automatically analyzes your swing (phases, speed, angles, common issues) and provides suggestions</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">Coach AI Agent</div>
+          <div class="info-card-tags"><span class="info-card-tag">Real-Time</span><span class="info-card-tag">Adaptive Guidance</span><span class="info-card-tag">Coach-Trained</span></div>
+          <ul class="info-card-list">
+            <li>Completed within seconds</li>
+            <li>Trained using real coaching examples and feedback</li>
+            <li>Learns the coach's decision-making, teaching priorities, and experience</li>
+            <li>Regularly reviewed and improved by the coach</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">Human Coach Analysis</div>
+          <div class="info-card-tags"><span class="info-card-tag">Expert Review</span><span class="info-card-tag">Personalized</span><span class="info-card-tag">Higher Cost</span></div>
+          <ul class="info-card-list">
+            <li>Personally reviewed by a coach (up to ~10 minutes)</li>
+            <li>May include voice feedback, annotations, and customized training advice</li>
+            <li>Takes into account more context (habits, recent practice, goals, etc.)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- NOTES -->
+      <div class="info-note-wrap">
+        <div class="info-note">
+          <span class="info-note-label">Pay-Per-View (PPV)</span>
+          Whether you use General AI Analysis, Coach AI, or Human Coach Feedback — if you are not subscribed, have insufficient credits, or the feature follows the coach's own pricing, each use will consume the corresponding number of credits.
+        </div>
+        <div class="info-note">
+          <span class="info-note-label">Credits</span>
+          Users can purchase additional credits at any time to use analysis and feedback features beyond their subscription allowance.
+        </div>
+      </div>
+
+      <div class="block-title" style="margin-bottom:6px">Coach AI Subscription Tiers</div>
+      <div class="block-sub">Imagine subscribing to a specific golf coach's long-term AI service. Two tiers are available based on coach expertise level.</div>
+
+      <table class="coach-tbl">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="c1h">Coach Tier 1</th>
+            <th class="c2h">Coach Tier 2</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>In-person lesson rate</td>
+            <td class="c1" style="color:var(--green-700);font-weight:600">Lower</td>
+            <td class="c2" style="color:var(--yellow-700);font-weight:600">Higher</td>
+          </tr>
+          <tr>
+            <td>Title / credentials</td>
+            <td class="c1">Facility staff coach<br><span style="font-size:12px;color:var(--content-secondary)">PGA Associate / Member</span></td>
+            <td class="c2">PGA Specialized / Master Professional<br><span style="font-size:12px;color:var(--content-secondary)">Teaching director</span></td>
+          </tr>
+          <tr>
+            <td>Primary students</td>
+            <td class="c1">Beginners &amp; improvers</td>
+            <td class="c2">Competitive &amp; advanced players</td>
+          </tr>
+          <tr>
+            <td>Teaching focus</td>
+            <td class="c1">
+              <ul style="list-style:disc;padding-left:16px;margin:0;display:flex;flex-direction:column;gap:3px">
+                <li>Fundamentals</li>
+                <li>Consistency</li>
+                <li>Lowering handicap</li>
+                <li>Playing more stably</li>
+              </ul>
+            </td>
+            <td class="c2">
+              <ul style="list-style:disc;padding-left:16px;margin:0;display:flex;flex-direction:column;gap:3px">
+                <li>Performance &amp; competitive strategy</li>
+                <li>Mental game + data</li>
+                <li>Long-term partnership</li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="mtabs">
+        <div class="mtab active" id="coach-t-c1" onclick="switchCoachTab('c1')">Coach Tier 1 pricing</div>
+        <div class="mtab" id="coach-t-c2" onclick="switchCoachTab('c2')">Coach Tier 2 pricing</div>
+      </div>
+      <div id="coach-p-c1"><div class="psm-block" id="psm-coach-c1"></div></div>
+      <div id="coach-p-c2" style="display:none"><div class="psm-block" id="psm-coach-c2"></div></div>
+
+      <div class="nav-row">
+        <button class="btn btn-text" onclick="goTo(4)">← Back</button>
+        <button class="btn btn-primary" onclick="goTo(6)">Next →</button>
+      </div>
+    </div>
+
+    <!-- ── PART 6 ── Pay Per View -->
+    <div class="sec" id="sec-6">
+      <div class="eyebrow">Part 6 of 6</div>
+      <h2 class="heading">Pay-Per-View (PPV) Pricing</h2>
+      <p class="sub">Single-use pricing — regardless of subscription, users without sufficient credits or following coach pricing will consume credits for each analysis or feedback session.</p>
+
+      <!-- INFO CARDS -->
+      <div class="info-cards-wrap">
+        <div class="info-card">
+          <div class="info-card-title">General AI Agent</div>
+          <div class="info-card-tags"><span class="info-card-tag">Generic</span><span class="info-card-tag">Standardized</span><span class="info-card-tag">Everyday Practice</span></div>
+          <ul class="info-card-list">
+            <li>Completed in ~30 seconds</li>
+            <li>Automatically analyzes your swing (phases, speed, angles, common issues) and provides suggestions</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">Coach AI Agent</div>
+          <div class="info-card-tags"><span class="info-card-tag">Real-Time</span><span class="info-card-tag">Adaptive Guidance</span><span class="info-card-tag">Coach-Trained</span></div>
+          <ul class="info-card-list">
+            <li>Completed within seconds</li>
+            <li>Trained using real coaching examples and feedback</li>
+            <li>Learns the coach's decision-making, teaching priorities, and experience</li>
+            <li>Regularly reviewed and improved by the coach</li>
+          </ul>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">Human Coach Analysis</div>
+          <div class="info-card-tags"><span class="info-card-tag">Expert Review</span><span class="info-card-tag">Personalized</span><span class="info-card-tag">Higher Cost</span></div>
+          <ul class="info-card-list">
+            <li>Personally reviewed by a coach (up to ~10 minutes)</li>
+            <li>May include voice feedback, annotations, and customized training advice</li>
+            <li>Takes into account more context (habits, recent practice, goals, etc.)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- NOTES -->
+      <div class="info-note-wrap">
+        <div class="info-note">
+          <span class="info-note-label">Pay-Per-View (PPV)</span>
+          Whether you use General AI Analysis, Coach AI, or Human Coach Feedback — if you are not subscribed, have insufficient credits, or the feature follows the coach's own pricing, each use will consume the corresponding number of credits.
+        </div>
+        <div class="info-note">
+          <span class="info-note-label">Credits</span>
+          Users can purchase additional credits at any time to use analysis and feedback features beyond their subscription allowance.
+        </div>
+      </div>
+
+      <div class="psm-section-lbl">General AI Agent analysis (per use)</div>
+      <div class="psm-block" id="psm-ppv-gen"></div>
+
+      <div class="psm-section-lbl">Coach AI Agent analysis (per use)</div>
+      <div class="mtabs">
+        <div class="mtab active" id="ppv-coach-t1" onclick="switchPpvCoachTab('t1')">Coach Tier 1</div>
+        <div class="mtab" id="ppv-coach-t2" onclick="switchPpvCoachTab('t2')">Coach Tier 2</div>
+      </div>
+      <div id="ppv-coach-p-t1"><div class="psm-block" id="psm-ppv-coach1"></div></div>
+      <div id="ppv-coach-p-t2" style="display:none"><div class="psm-block" id="psm-ppv-coach2"></div></div>
+
+      <div class="psm-section-lbl">Real coach Pay-Per-View feedback (10 min)</div>
+      <div class="mtabs">
+        <div class="mtab active" id="ppv-real-t1" onclick="switchPpvRealTab('t1')">Coach Tier 1</div>
+        <div class="mtab" id="ppv-real-t2" onclick="switchPpvRealTab('t2')">Coach Tier 2</div>
+      </div>
+      <div id="ppv-real-p-t1"><div class="psm-block" id="psm-real-c1"></div></div>
+      <div id="ppv-real-p-t2" style="display:none"><div class="psm-block" id="psm-real-c2"></div></div>
+
+      <div class="res-grid" id="psm-results" style="display:none"></div>
+
+      <div class="nav-row">
+        <button class="btn btn-text" onclick="goTo(5)">← Back</button>
+        <button class="btn btn-primary" onclick="submitSurvey()">Submit survey ✓</button>
+      </div>
+    </div>
+
+    <!-- SUCCESS -->
+    <div class="sec" id="sec-done">
+      <div class="success-wrap">
+        <div class="success-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M7 16.5L13 22.5L25 10" stroke="#719342" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h2 class="success-h">Thank you!</h2>
+        <p class="success-sub">Your responses have been recorded. They will help shape the pricing strategy for this AI golf app.</p>
+        <div class="chips" id="sum-chips"></div>
+        <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border-default)">
+          <p style="font-size:13px;color:var(--content-secondary);margin-bottom:14px">Want to retake the survey?</p>
+          <button class="btn btn-secondary" onclick="location.reload()">Start over</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ── PSM state ──
+const PSM = {};
+const PSM_META = [
+  {l:'Too cheap — quality concern', c:'#EF4444'},
+  {l:'Good value — just right',     c:'#719342'},
+  {l:'Pricey — might still buy',    c:'#A88D37'},
+  {l:'Too expensive — won\'t buy',  c:'#828282'},
+];
+const PSM_CFG = {
+  'sub-t2':    [1,50,  1,1],
+  'sub-t3':    [1,100, 1,1],
+  'coach-c1':  [1,200, 1,1],
+  'coach-c2':  [1,500, 1,1],
+  'ppv-gen':   [0.1,5,   0.1,0.1],
+  'ppv-coach1':[0.1,10,  0.1,0.1],
+  'ppv-coach2':[1,20,    0.1,0.1],
+  'real-c1':   [1,60,    1,1],
+  'real-c2':   [5,120,   1,1],
+};
+
+function fmtPsm(val,cfg){
+  return cfg[3]<1 ? '$'+parseFloat(val).toFixed(1) : '$'+Math.round(val);
+}
+
+function buildPsm(key){
+  const cfg=PSM_CFG[key],mn=cfg[0],mx=cfg[1],st=cfg[3];
+  PSM[key]=[mn,mn,mn,mn];
+  const el=document.getElementById('psm-'+key);
+  el.innerHTML=PSM_META.map((m,i)=>`
+    <div class="psm-item">
+      <div class="psm-dot" style="background:${m.c}"></div>
+      <div class="psm-desc">${m.l}</div>
+      <input type="range" class="psm-slider" min="${mn}" max="${mx}" step="${st}" value="${mn}"
+        id="psm-${key}-s${i}" oninput="onPsmInput('${key}',${i})">
+      <div class="psm-price" id="psm-${key}-v${i}">${fmtPsm(mn,cfg)}</div>
+    </div>`).join('');
+}
+
+function onPsmInput(key,idx){
+  const cfg=PSM_CFG[key],mn=cfg[0],mx=cfg[1];
+  const raw=parseFloat(document.getElementById(`psm-${key}-s${idx}`).value);
+  const floor=idx>0?PSM[key][idx-1]:mn;
+  const val=Math.max(floor,Math.min(mx,raw));
+  PSM[key][idx]=val;
+  document.getElementById(`psm-${key}-s${idx}`).value=val;
+  document.getElementById(`psm-${key}-v${idx}`).textContent=fmtPsm(val,cfg);
+  for(let j=idx+1;j<4;j++){
+    PSM[key][j]=val;
+    document.getElementById(`psm-${key}-s${j}`).value=val;
+    document.getElementById(`psm-${key}-v${j}`).textContent=fmtPsm(val,cfg);
+  }
+}
+
+// ── Helpers ──
+function sv(sid,vid,fmt){
+  document.getElementById(vid).innerHTML=fmt(document.getElementById(sid).value);
+}
+function fmtAnnual(v){
+  const n=parseInt(v);
+  if(n>=51000) return '>$50k';
+  if(n>=10000) return '$'+(n/1000).toFixed(0)+'k';
+  if(n>=1000)  return '$'+(n/1000).toFixed(1)+'k';
+  return '$'+n;
+}
+function pickOne(gid,el){
+  document.querySelectorAll('#'+gid+' .pill').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+}
+
+// ── Part 1 ──
+function onAgeChange(){
+  const age=parseInt(document.getElementById('age-s').value);
+  document.getElementById('age-v').textContent=age;
+  const ys=document.getElementById('yrs-s');
+  ys.max=age;
+  if(parseInt(ys.value)>age) ys.value=age;
+  document.getElementById('yrs-max-lbl').textContent=age+' yrs';
+  onYrsChange();
+}
+function onYrsChange(){
+  const v=parseInt(document.getElementById('yrs-s').value);
+  document.getElementById('yrs-v').textContent=v===0?'<1 yr':v===1?'1 yr':v+' yrs';
+}
+
+// ── Part 2 seasonal frequency ──
+function showSeasonalFreq(isSeasonal) {
+  document.getElementById('freq-static').classList.toggle('show', !isSeasonal);
+  document.getElementById('freq-seasonal').classList.toggle('show', isSeasonal);
+}
+function switchSeasonTab(s) {
+  ['spring','summer','fall','winter'].forEach(x => {
+    document.getElementById('seas-t-'+x).classList.toggle('active', x===s);
+    document.getElementById('seas-p-'+x).style.display = x===s ? '' : 'none';
+  });
+}
+function showScoreInput(yes){
+  document.getElementById('cond-score-input').classList.toggle('show',yes);
+  document.getElementById('cond-level').classList.toggle('show',!yes);
+}
+function switchScoreTab(t){
+  ['score','hcp'].forEach(x=>{
+    document.getElementById('mt-'+x).classList.toggle('active',x===t);
+    document.getElementById('inp-'+x).style.display=x===t?'':'none';
+  });
+}
+
+// ── Stacked bars ──
+const PRAC_OPTS=[
+  {l:'At home (app / mirror / net)', c:'#719342'},
+  {l:'Indoor simulator',             c:'#3a8fb5'},
+  {l:'Outdoor driving range',        c:'#A88D37'},
+  {l:'Short game area',              c:'#8a60c8'},
+  {l:'On-course play',               c:'#c85a3a'},
+  {l:'Other',                        c:'#828282'},
+  {l:'Rarely practice',              c:'#CDCDCD', excl:true},
+];
+// ══════════════════════════════════════════════
+// PART 3 — Category / Sub-category spend system
+// ══════════════════════════════════════════════
+const PRAC_SEL={};
+
+// Category definitions (top level)
+const CAT_COLORS=['#719342','#3a8fb5','#A88D37','#8a60c8','#c85a3a'];
+const CAT_LABELS=['Improvement','Playing','Equipment','Apparel & Lifestyle','Golf Travel / Trip'];
+const CAT_HAS_SUBS=[true,true,false,false,false]; // cats 0,1 have sub-bars
+
+// Sub-category definitions
+const SUB_OPTS={
+  imp:[
+    {l:'In-person coaching',            c:'#4aa8a0'},
+    {l:'Online coaching',               c:'#c87820'},
+    {l:'Online content (YouTube, pre-recorded courses)', c:'#8a60c8'},
+    {l:'Swing analysis apps / AI tools',c:'#c85a3a'},
+    {l:'Simulator / Net (training)',    c:'#5a9e5a'},
+    {l:'Training aids',                 c:'#b55a8a'},
+  ],
+  play:[
+    {l:'Course fees (green fee)',        c:'#4aa8a0'},
+    {l:'Course membership / pass',      c:'#c87820'},
+    {l:'Driving range',                 c:'#8a60c8'},
+    {l:'Short game area (if charged)',  c:'#c85a3a'},
+    {l:'Indoor simulator (leisure)',    c:'#5a9e5a'},
+  ]
+};
+
+// State
+let spendMode='drag';
+const CAT_SEL={}; // catIdx → true if selected
+const CAT_AMT={}; // catIdx → dollar total for that cat (direct or summed from subs)
+
+const SUB_SEL={imp:{}, play:{}};   // sub selections (barId-style)
+const SUB_AMTS={imp:{}, play:{}};  // sub dollar amounts
+
+let subOtherCount={imp:0, play:0};
+const SUB_OTHER_COLORS=['#3a8fb5','#719342','#A88D37','#e05c9e','#6a9fd8','#b5783a'];
+
+const customCatCount={n:0};
+const CUSTOM_CATS={}; // key → {label, color, amt}
+const CUSTOM_COLORS=['#6a9fd8','#b5783a','#e05c9e','#5a9e5a','#c87820','#8a60c8'];
+
+// ── Toggle a top-level category ──
+function toggleCat(idx){
+  const card=document.getElementById('cat-'+idx+'-card');
+  const chk=document.getElementById('cat-'+idx+'-chk');
+  if(CAT_SEL[idx]!==undefined){
+    delete CAT_SEL[idx];
+    if(CAT_HAS_SUBS[idx]){
+      document.getElementById('cat-'+idx+'-body').classList.remove('show');
+      const arr=document.getElementById('cat-'+idx+'-arrow');
+      if(arr) arr.textContent='▶';
+    }
+    if(card) card.classList.remove('sel');
+    if(chk) chk.textContent='';
+    hideCatInputs(idx);
+  } else {
+    CAT_SEL[idx]=1;
+    rebalanceCat();
+    if(card) card.classList.add('sel');
+    if(chk) chk.textContent='✓';
+    if(CAT_HAS_SUBS[idx]){
+      document.getElementById('cat-'+idx+'-body').classList.add('show');
+      const arr=document.getElementById('cat-'+idx+'-arrow');
+      if(arr) arr.textContent='▼';
+      // Render sub-options immediately on expand
+      const bk=idx===0?'imp':'play';
+      renderSubBar(bk);
+    }
+    showCatInputs(idx);
+  }
+  recomputeAll();
+}
+
+function toggleSubBody(idx){
+  const body=document.getElementById('cat-'+idx+'-body');
+  const arr=document.getElementById('cat-'+idx+'-arrow');
+  if(!body) return;
+  const isOpen=body.classList.contains('show');
+  body.classList.toggle('show',!isOpen);
+  if(arr) arr.textContent=isOpen?'▶':'▼';
+}
+
+function rebalanceCat(){
+  const keys=Object.keys(CAT_SEL).map(Number);
+  if(!keys.length) return;
+  const n=keys.length;
+  const base=Math.floor(100/n);
+  const rem=100-base*n;
+  keys.forEach((k,i)=>{ CAT_SEL[k]=base+(i===0?rem:0); });
+}
+
+function showCatInputs(idx){
+  const pv=document.getElementById('cat-'+idx+'-pv');
+  const aw=document.getElementById('cat-'+idx+'-amt-wrap');
+  if(spendMode==='drag'){
+    if(pv) pv.style.display='inline';
+    if(aw) aw.style.display='none';
+  } else {
+    if(pv) pv.style.display='none';
+    if(aw) aw.style.display='flex';
+  }
+}
+function hideCatInputs(idx){
+  const pv=document.getElementById('cat-'+idx+'-pv');
+  const aw=document.getElementById('cat-'+idx+'-amt-wrap');
+  if(pv){ pv.style.display='none'; pv.textContent='—'; }
+  if(aw) aw.style.display='none';
+}
+
+// ── Sub-bar toggle ──
+function toggleSub(barKey,catIdx,subIdx){
+  const sel=SUB_SEL[barKey];
+  const opts=SUB_OPTS[barKey];
+  if(sel[subIdx]!==undefined){
+    delete sel[subIdx];
+    rebalance(sel);
+  } else {
+    sel[subIdx]=1;
+    rebalance(sel);
+  }
+  renderSubBar(barKey);
+  recomputeAll();
+}
+
+// ── Amount inputs ──
+function onCatAmtInput(idx){
+  // only for cats without subs (3,4,5) or custom
+  const v=parseFloat(document.getElementById('cat-'+idx+'-ai').value)||0;
+  CAT_AMT[idx]=v;
+  recomputeAll();
+}
+
+function onSubAmtInput(barKey,subIdx){
+  const v=parseFloat(document.getElementById(barKey+'-sub-ai'+subIdx).value)||0;
+  SUB_AMTS[barKey][subIdx]=v;
+  recomputeSubFromAmt(barKey);
+  recomputeAll();
+}
+
+function onSubOtherAmtInput(barKey,key,rowId){
+  const v=parseFloat(document.getElementById(rowId+'-ai').value)||0;
+  SUB_AMTS[barKey][key]=v;
+  recomputeSubFromAmt(barKey);
+  recomputeAll();
+}
+
+function onCustomAmtInput(key){
+  const v=parseFloat(document.getElementById('cc-'+key+'-ai').value)||0;
+  if(CUSTOM_CATS[key]) CUSTOM_CATS[key].amt=v;
+  recomputeAll();
+}
+
+// ── Sub bar rebalance from $ ──
+function recomputeSubFromAmt(barKey){
+  const sel=SUB_SEL[barKey];
+  const amts=SUB_AMTS[barKey];
+  const keys=Object.keys(sel).map(Number);
+  const total=keys.reduce((s,k)=>s+(amts[k]||0),0);
+  if(total===0){
+    keys.forEach(k=>sel[k]=Math.floor(100/keys.length)||1);
+  } else {
+    const pcts=keys.map(k=>(amts[k]||0)/total*100);
+    const floored=pcts.map(p=>Math.floor(p));
+    let rem=100-floored.reduce((a,b)=>a+b,0);
+    pcts.forEach((_,i)=>{ if(rem>0){floored[i]++;rem--;} });
+    keys.forEach((k,i)=>sel[k]=Math.max(1,floored[i]));
+  }
+  renderSubBar(barKey);
+}
+
+// ── Get cat dollar total ──
+function getCatTotal(idx){
+  if(!CAT_SEL[idx]) return 0;
+  if(idx===0) return getSubTotal('imp');
+  if(idx===1) return getSubTotal('play');
+  // direct input
+  const ai=document.getElementById('cat-'+idx+'-ai');
+  return ai ? (parseFloat(ai.value)||0) : 0;
+}
+
+function getSubTotal(barKey){
+  const amts=SUB_AMTS[barKey];
+  const sel=SUB_SEL[barKey];
+  return Object.keys(sel).map(Number).reduce((s,k)=>s+(amts[k]||0),0);
+}
+
+// ── Master recompute ──
+function recomputeAll(){
+  // 1. Compute each cat's dollar amount
+  const activeCats=[...Object.keys(CAT_SEL).map(Number)];
+  // custom cats
+  Object.keys(CUSTOM_CATS).forEach(k=>{
+    activeCats.push('cc_'+k);
+  });
+
+  let grandTotal=0;
+  activeCats.forEach(idx=>{
+    const isCustom=String(idx).startsWith('cc_');
+    const amt=isCustom
+      ? (CUSTOM_CATS[idx.replace('cc_','')]?.amt||0)
+      : getCatTotal(idx);
+    grandTotal+=amt;
+    if(!isCustom) CAT_AMT[+idx]=amt;
+  });
+
+  // 2. Compute top-level bar percentages
+  const catKeys=Object.keys(CAT_SEL).map(Number);
+  if(spendMode==='drag'){
+    // In drag mode, bar is driven by drag handles; just update pv labels
+    const allKeys=[...catKeys, ...Object.keys(CUSTOM_CATS).map(k=>'cc_'+k)];
+    // recalc pcts from CAT_SEL values if drag
+    // drag mode pv updated via renderCatBar
+  } else {
+    // In amt mode, derive pct from amounts
+    const allAmt=catKeys.reduce((s,k)=>s+getCatTotal(k),0)
+      + Object.keys(CUSTOM_CATS).reduce((s,k)=>s+(CUSTOM_CATS[k].amt||0),0);
+    catKeys.forEach(idx=>{
+      const pv=document.getElementById('cat-'+idx+'-pv');
+      const pct=allAmt>0?Math.round(getCatTotal(idx)/allAmt*100):0;
+      if(pv && CAT_SEL[idx]) pv.textContent=pct+'%';
+    });
+  }
+
+  // Sync locked amt display for cats with subs (0=imp, 1=play)
+  if(spendMode==='amt'){
+    [{idx:0,bk:'imp'},{idx:1,bk:'play'}].forEach(({idx,bk})=>{
+      if(!CAT_SEL[idx]) return;
+      const subTotal=getSubTotal(bk);
+      const ai=document.getElementById('cat-'+idx+'-ai');
+      if(ai) ai.value=subTotal>0?subTotal:'';
+    });
+  }
+
+  // 3. Render top bar
+  renderCatBar();
+
+  // 4. Update annual slider
+  if(spendMode==='amt'){
+    updateAnnualSlider(grandTotal);
+  }
+}
+
+// ── Render top-level cat bar ──
+function renderCatBar(){
+  const bar=document.getElementById('cat-bar');
+  const catKeys=Object.keys(CAT_SEL).map(Number);
+  const customKeys=Object.keys(CUSTOM_CATS);
+  const totalSel=catKeys.length+customKeys.length;
+  if(totalSel===0){
+    bar.innerHTML='<div class="bar-empty">Select categories below</div>';
+    return;
+  }
+
+  // Collect entries: {label, color, amt or pct}
+  const entries=[];
+  catKeys.forEach(k=>{
+    entries.push({label:CAT_LABELS[k], color:CAT_COLORS[k], amt:getCatTotal(k), catIdx:k});
+  });
+  customKeys.forEach(k=>{
+    const c=CUSTOM_CATS[k];
+    entries.push({label:c.label||'Other', color:c.color, amt:c.amt||0, catIdx:'cc_'+k});
+  });
+
+  let pcts;
+  if(spendMode==='amt'){
+    const total=entries.reduce((s,e)=>s+e.amt,0)||1;
+    const floored=entries.map(e=>Math.floor(e.amt/total*100));
+    let rem=100-floored.reduce((a,b)=>a+b,0);
+    floored.forEach((_,i)=>{ if(rem>0){floored[i]++;rem--;} });
+    pcts=floored;
+  } else {
+    // drag mode: equal split for new cats, then user drags
+    // use CAT_SEL values (already set by rebalance or drag)
+    const rawTotal=catKeys.reduce((s,k)=>s+(CAT_SEL[k]||1),0);
+    pcts=entries.map(e=>{
+      if(String(e.catIdx).startsWith('cc_')){
+        return CUSTOM_CATS[e.catIdx.replace('cc_','')]?.pct||Math.floor(100/totalSel);
+      }
+      return CAT_SEL[e.catIdx]||Math.floor(100/totalSel);
+    });
+    // normalise
+    const pSum=pcts.reduce((a,b)=>a+b,0)||100;
+    const floored=pcts.map(p=>Math.floor(p/pSum*100));
+    let rem=100-floored.reduce((a,b)=>a+b,0);
+    floored.forEach((_,i)=>{ if(rem>0){floored[i]++;rem--;} });
+    pcts=floored;
+  }
+
+  let cursor=0;
+  bar.innerHTML=entries.map((e,pos)=>{
+    const pct=pcts[pos];
+    const left=cursor; cursor+=pct;
+    const isLast=(pos===entries.length-1);
+    const handle=isLast?'':
+      `<div class="bar-handle" data-idx="${pos}"
+        onmousedown="startCatBarDrag(event,${pos})"
+        ontouchstart="startCatBarDrag(event,${pos})"></div>`;
+    const inner=pct>14
+      ?`<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:1;min-width:0">${e.label}</span><span style="flex-shrink:0;opacity:.85;font-size:11px;font-weight:700">${pct}%</span>`
+      :pct>5?`<span style="font-size:11px;font-weight:700">${pct}%</span>`:'';
+    return`<div class="bar-seg" style="left:${left}%;width:${pct}%;background:${e.color}">${inner}${handle}</div>`;
+  }).join('');
+  // Update pv labels on cat cards (drag mode shows %; amt mode pv is hidden)
+  if(spendMode==='drag'){
+    entries.forEach((e,pos)=>{
+      if(String(e.catIdx).startsWith('cc_')) return;
+      const pv=document.getElementById('cat-'+e.catIdx+'-pv');
+      if(pv && CAT_SEL[e.catIdx]) pv.textContent=pcts[pos]+'%';
+    });
+  }
+}
+
+// ── Render sub-bar ──
+function renderSubBar(barKey){
+  const barId=barKey+'-bar';
+  const legId=barKey+'-leg';
+  const sel=SUB_SEL[barKey];
+  const opts=SUB_OPTS[barKey];
+  const amts=SUB_AMTS[barKey];
+  const bar=document.getElementById(barId);
+  if(!bar) return;
+
+  // Legend
+  const leg=document.getElementById(legId);
+  if(leg){
+    opts.forEach((o,i)=>{
+      let row=document.getElementById(legId+'-r'+i);
+      if(!row){
+        // build row
+        row=document.createElement('div');
+        row.className='leg-row';
+        row.id=legId+'-r'+i;
+        const amtWrap=`<div id="${legId}-ai-wrap${i}" style="display:none;align-items:center;gap:4px;margin-left:auto">
+          <span style="font-size:14px;color:var(--content-secondary)">$</span>
+          <input type="number" min="0" step="1" placeholder="0" id="${barKey}-sub-ai${i}"
+            style="width:80px;padding:5px 8px;font-size:14px;font-weight:600;border:1px solid var(--border-default);border-radius:var(--radius-lg);text-align:right;color:var(--content-primary);background:var(--white);font-family:var(--font-family)"
+            oninput="onSubAmtInput('${barKey}',${i})">
+          </div>`;
+        row.innerHTML=`
+          <div class="leg-check" id="${legId}-chk${i}"></div>
+          <div class="leg-dot" style="background:${o.c}"></div>
+          <span style="flex:1">${o.l}</span>
+          ${amtWrap}
+          <span class="leg-pct-val" id="${legId}-pv${i}" style="display:none;min-width:36px;text-align:right;font-size:14px;font-weight:700">—</span>`;
+        row.onclick=(e)=>{
+          if(e.target.type==='number') return;
+          toggleSub(barKey, barKey==='imp'?0:1, i);
+        };
+        leg.appendChild(row);
+      }
+      const isSel=sel[i]!==undefined;
+      const chk=document.getElementById(legId+'-chk'+i);
+      const pv=document.getElementById(legId+'-pv'+i);
+      const aw=document.getElementById(legId+'-ai-wrap'+i);
+      if(chk) chk.textContent=isSel?'✓':'';
+      row.classList.toggle('sel',isSel);
+      if(spendMode==='drag'){
+        if(pv){ pv.style.display=isSel?'inline':'none'; if(isSel) pv.textContent=(sel[i]||0)+'%'; }
+        if(aw) aw.style.display='none';
+      } else {
+        if(pv) pv.style.display='none';
+        if(aw) aw.style.display=isSel?'flex':'none';
+      }
+    });
+  }
+
+  // Bar segments
+  const keys=Object.keys(sel).map(Number);
+  if(!keys.length){
+    bar.innerHTML='<div class="bar-empty">Select sub-categories below</div>';
+    return;
+  }
+  const rawTotal=keys.reduce((s,k)=>s+sel[k],0)||1;
+  const floored=keys.map(k=>Math.floor(sel[k]/rawTotal*100));
+  let rem=100-floored.reduce((a,b)=>a+b,0);
+  floored.forEach((_,i)=>{ if(rem>0){floored[i]++;rem--;} });
+  let cursor=0;
+  bar.innerHTML=keys.map((k,pos)=>{
+    const pct=floored[pos];
+    const left=cursor; cursor+=pct;
+    const col=k>=0?(opts[k]?.c||'#ccc'):SUB_OTHER_COLORS[(-(k)-1)%SUB_OTHER_COLORS.length];
+    const label=k>=0?(opts[k]?.l||''):(document.getElementById(barKey+'-sub-oth-'+(-(k)-1)+'-txt')?.value||'Other');
+    const isLast=(pos===keys.length-1);
+    const handle=isLast?'':
+      `<div class="bar-handle" onmousedown="startSubBarDrag(event,'${barKey}',${pos})" ontouchstart="startSubBarDrag(event,'${barKey}',${pos})"></div>`;
+    const inner=pct>14
+      ?`<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:1;min-width:0">${label}</span><span style="flex-shrink:0;opacity:.85;font-size:11px;font-weight:700">${pct}%</span>`
+      :pct>5?`<span style="font-size:11px;font-weight:700">${pct}%</span>`:'';
+    return`<div class="bar-seg" style="left:${left}%;width:${pct}%;background:${col}">${inner}${handle}</div>`;
+  }).join('');
+
+  // other rows pct
+  for(let i=0;i<subOtherCount[barKey];i++){
+    const key=-(i+1);
+    if(sel[key]===undefined) continue;
+    const pv=document.getElementById(barKey+'-sub-oth-'+i+'-pv');
+    const aw=document.getElementById(barKey+'-sub-oth-'+i+'-ai-wrap');
+    if(spendMode==='drag'){
+      if(pv){ pv.style.display='inline'; pv.textContent=(sel[key]||0)+'%'; }
+      if(aw) aw.style.display='none';
+    } else {
+      if(pv) pv.style.display='none';
+      if(aw) aw.style.display='flex';
+    }
+  }
+}
+
+// ── Sub-bar drag ──
+function startBarDrag(e, barId, legId, handlePos){
+  e.preventDefault();
+  const bar=document.getElementById(barId);
+  const sel=PRAC_SEL;
+  const keys=Object.keys(sel).map(Number);
+  if(keys.length<2) return;
+  const barRect=bar.getBoundingClientRect();
+  const barW=barRect.width;
+  function getX(ev){ return ev.touches?ev.touches[0].clientX:ev.clientX; }
+  function onMove(ev){
+    const x=getX(ev)-barRect.left;
+    const pct=Math.round(Math.max(1,Math.min(99,x/barW*100)));
+    let cumBefore=0;
+    for(let i=0;i<handlePos;i++) cumBefore+=sel[keys[i]];
+    const newSeg=Math.max(1,pct-cumBefore);
+    const nextSeg=Math.max(1,sel[keys[handlePos]]+sel[keys[handlePos+1]]-newSeg);
+    sel[keys[handlePos]]=newSeg;
+    sel[keys[handlePos+1]]=nextSeg;
+    renderBar(barId,legId,PRAC_OPTS,sel);
+  }
+  function onUp(){
+    document.removeEventListener('mousemove',onMove);
+    document.removeEventListener('mouseup',onUp);
+    document.removeEventListener('touchmove',onMove);
+    document.removeEventListener('touchend',onUp);
+  }
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
+  document.addEventListener('touchmove',onMove,{passive:false});
+  document.addEventListener('touchend',onUp);
+}
+
+function startSubBarDrag(e, barKey, handlePos){
+  if(spendMode==='amt') return;
+  e.preventDefault();
+  const barId=barKey+'-bar';
+  const bar=document.getElementById(barId);
+  const sel=SUB_SEL[barKey];
+  const keys=Object.keys(sel).map(Number);
+  if(keys.length<2) return;
+  const barRect=bar.getBoundingClientRect();
+  const barW=barRect.width;
+  function getX(ev){ return ev.touches?ev.touches[0].clientX:ev.clientX; }
+  function onMove(ev){
+    const x=getX(ev)-barRect.left;
+    const pct=Math.round(Math.max(1,Math.min(99,x/barW*100)));
+    let cumBefore=0;
+    for(let i=0;i<handlePos;i++) cumBefore+=sel[keys[i]];
+    const newSeg=Math.max(1,pct-cumBefore);
+    const nextSeg=Math.max(1,sel[keys[handlePos]]+sel[keys[handlePos+1]]-newSeg);
+    sel[keys[handlePos]]=newSeg;
+    sel[keys[handlePos+1]]=nextSeg;
+    renderSubBar(barKey);
+  }
+  function onUp(){
+    document.removeEventListener('mousemove',onMove);
+    document.removeEventListener('mouseup',onUp);
+    document.removeEventListener('touchmove',onMove);
+    document.removeEventListener('touchend',onUp);
+  }
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
+  document.addEventListener('touchmove',onMove,{passive:false});
+  document.addEventListener('touchend',onUp);
+}
+
+// ── Cat bar drag ──
+function startCatBarDrag(e, handlePos){
+  if(spendMode==='amt') return;
+  e.preventDefault();
+  const bar=document.getElementById('cat-bar');
+  const catKeys=Object.keys(CAT_SEL).map(Number);
+  if(catKeys.length<2) return;
+  const barRect=bar.getBoundingClientRect();
+  const barW=barRect.width;
+  function getX(ev){ return ev.touches?ev.touches[0].clientX:ev.clientX; }
+  function onMove(ev){
+    const x=getX(ev)-barRect.left;
+    const pct=Math.round(Math.max(1,Math.min(99,x/barW*100)));
+    let cumBefore=0;
+    for(let i=0;i<handlePos;i++) cumBefore+=CAT_SEL[catKeys[i]];
+    const newSeg=Math.max(1,pct-cumBefore);
+    const nextSeg=Math.max(1,CAT_SEL[catKeys[handlePos]]+CAT_SEL[catKeys[handlePos+1]]-newSeg);
+    CAT_SEL[catKeys[handlePos]]=newSeg;
+    CAT_SEL[catKeys[handlePos+1]]=nextSeg;
+    renderCatBar();
+  }
+  function onUp(){
+    document.removeEventListener('mousemove',onMove);
+    document.removeEventListener('mouseup',onUp);
+    document.removeEventListener('touchmove',onMove);
+    document.removeEventListener('touchend',onUp);
+  }
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onUp);
+  document.addEventListener('touchmove',onMove,{passive:false});
+  document.addEventListener('touchend',onUp);
+}
+
+// ── Add sub-other ──
+function addSubOther(barKey, catIdx){
+  const rawIdx=subOtherCount[barKey]++;
+  const key=-(rawIdx+1);
+  const color=SUB_OTHER_COLORS[rawIdx%SUB_OTHER_COLORS.length];
+  const rowId=barKey+'-sub-oth-'+rawIdx;
+  const wrap=document.getElementById(barKey+'-others-wrap');
+  const div=document.createElement('div');
+  div.id=rowId+'-wrap';
+  div.className='leg-row sel';
+  div.style.cssText='margin-top:4px;padding:10px 10px;border-radius:8px;background:var(--green-300)';
+  div.innerHTML=`
+    <div class="leg-check" style="background:var(--green-700);border-color:var(--green-700);color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0">✓</div>
+    <div class="leg-dot" style="background:${color};width:12px;height:12px;border-radius:50%;flex-shrink:0"></div>
+    <input type="text" placeholder="Sub-category name…" id="${rowId}-txt"
+      style="flex:1;font-size:15px;padding:4px 8px;border:1px solid var(--border-default);border-radius:6px;background:var(--white);color:var(--content-primary)"
+      oninput="renderSubBar('${barKey}')">
+    <div id="${rowId}-ai-wrap" style="display:none;align-items:center;gap:4px">
+      <span style="font-size:14px;color:var(--content-secondary)">$</span>
+      <input type="number" min="0" step="1" placeholder="0" id="${rowId}-ai"
+        style="width:80px;padding:5px 8px;font-size:14px;font-weight:600;border:1px solid var(--border-default);border-radius:var(--radius-lg);text-align:right;color:var(--content-primary);background:var(--white);font-family:var(--font-family)"
+        oninput="onSubOtherAmtInput('${barKey}',${key},'${rowId}')">
+    </div>
+    <span style="min-width:36px;text-align:right;font-size:14px;font-weight:700;color:var(--content-primary)" id="${rowId}-pv">—</span>
+    <button class="other-rm" onclick="removeSubOther('${barKey}',${key},'${rowId}')" title="Remove">✕</button>`;
+  wrap.appendChild(div);
+  SUB_SEL[barKey][key]=1;
+  rebalance(SUB_SEL[barKey]);
+  // apply current mode
+  const aiWrap=document.getElementById(rowId+'-ai-wrap');
+  const pv=document.getElementById(rowId+'-pv');
+  if(spendMode==='amt'){ if(aiWrap) aiWrap.style.display='flex'; if(pv) pv.style.display='none'; }
+  else { if(aiWrap) aiWrap.style.display='none'; if(pv){ pv.style.display='inline'; pv.textContent='—'; } }
+  renderSubBar(barKey);
+  recomputeAll();
+}
+
+function removeSubOther(barKey,key,rowId){
+  document.getElementById(rowId+'-wrap').remove();
+  delete SUB_SEL[barKey][key];
+  delete SUB_AMTS[barKey][key];
+  if(Object.keys(SUB_SEL[barKey]).length) rebalance(SUB_SEL[barKey]);
+  renderSubBar(barKey);
+  recomputeAll();
+}
+
+// ── Add custom top-level category ──
+function addCustomCat(){
+  const rawIdx=customCatCount.n++;
+  const key=rawIdx;
+  const color=CUSTOM_COLORS[rawIdx%CUSTOM_COLORS.length];
+  CUSTOM_CATS[key]={label:'',color,amt:0,pct:0};
+  const wrap=document.getElementById('custom-cats-wrap');
+  const div=document.createElement('div');
+  div.id='cc-'+key+'-wrap';
+  div.className='leg-row sel';
+  div.innerHTML=`
+      <div class="leg-check" style="background:var(--green-700);border-color:var(--green-700);color:#fff">✓</div>
+      <div class="leg-dot" style="background:${color}"></div>
+      <input type="text" placeholder="Category name…" id="cc-${key}-txt"
+        style="flex:1;font-size:16px;font-weight:600;padding:4px 8px;border:1px solid var(--border-default);border-radius:6px;background:var(--white);color:var(--content-primary)"
+        oninput="CUSTOM_CATS[${key}].label=this.value; renderCatBar()">
+      <div id="cc-${key}-amt-wrap" style="display:${spendMode==='amt'?'flex':'none'};align-items:center;gap:4px">
+        <span style="font-size:14px;color:var(--content-secondary)">$</span>
+        <input type="number" min="0" step="1" placeholder="0" id="cc-${key}-ai"
+          style="width:90px;padding:5px 8px;font-size:14px;font-weight:600;border:1px solid var(--border-default);border-radius:var(--radius-lg);text-align:right;color:var(--content-primary);background:var(--white);font-family:var(--font-family)"
+          onclick="event.stopPropagation()" oninput="onCustomAmtInput(${key})">
+      </div>
+      <span id="cc-${key}-pv" style="display:${spendMode==='drag'?'inline':'none'};min-width:40px;text-align:right;font-size:14px;font-weight:700">—</span>
+      <button class="other-rm" onclick="removeCustomCat(${key})" title="Remove">✕</button>`;
+  wrap.appendChild(div);
+  recomputeAll();
+}
+
+function removeCustomCat(key){
+  document.getElementById('cc-'+key+'-wrap').remove();
+  delete CUSTOM_CATS[key];
+  recomputeAll();
+}
+
+// ── Toggle spend mode ──
+function toggleSpendMode(){
+  spendMode=spendMode==='drag'?'amt':'drag';
+  const isAmt=spendMode==='amt';
+  const btn=document.getElementById('spend-mode-btn');
+  const thumb=document.getElementById('spend-mode-thumb');
+  btn.style.background=isAmt?'var(--green-700)':'var(--gray-300)';
+  thumb.style.transform=isAmt?'translateX(20px)':'translateX(0)';
+  document.getElementById('sml-drag').style.cssText=`font-size:14px;font-weight:${isAmt?500:600};color:${isAmt?'var(--content-secondary)':'var(--green-700)'}`;
+  document.getElementById('sml-amt').style.cssText=`font-size:14px;font-weight:${isAmt?600:500};color:${isAmt?'var(--green-700)':'var(--content-secondary)'}`;
+  document.getElementById('spend-hint-drag').style.display=isAmt?'none':'block';
+  document.getElementById('spend-hint-amt').style.display=isAmt?'block':'none';
+
+  // Lock/unlock annual slider
+  const annualSlider=document.getElementById('annual-s');
+  annualSlider.style.pointerEvents=isAmt?'none':'auto';
+  annualSlider.style.opacity=isAmt?'0.5':'1';
+
+  // Reset all input values
+  [0,1,2,3,4].forEach(i=>{
+    if(!CAT_SEL[i]) return;
+    const ai=document.getElementById('cat-'+i+'-ai');
+    if(ai) ai.value='';
+    if(i<=1){ // has subs
+      const bk=i===0?'imp':'play';
+      Object.keys(SUB_SEL[bk]).map(Number).forEach(k=>{
+        const idx=k>=0?k:null;
+        if(idx!==null){ const inp=document.getElementById(bk+'-sub-ai'+idx); if(inp) inp.value=''; }
+        const rowId=k<0?bk+'-sub-oth-'+(-(k)-1):null;
+        if(rowId){ const inp=document.getElementById(rowId+'-ai'); if(inp) inp.value=''; }
+        delete SUB_AMTS[bk][k];
+      });
+      rebalance(SUB_SEL[bk]);
+    }
+    delete CAT_AMT[i];
+  });
+  // Reset custom cats
+  Object.keys(CUSTOM_CATS).forEach(k=>{
+    CUSTOM_CATS[k].amt=0;
+    const ai=document.getElementById('cc-'+k+'-ai'); if(ai) ai.value='';
+  });
+  // Reset annual slider
+  document.getElementById('annual-s').value=0;
+  document.getElementById('annual-v').textContent='$0';
+
+  // Sync all visible inputs/pct displays
+  [0,1,2,3,4].forEach(i=>{
+    if(!CAT_SEL[i]) return;
+    showCatInputs(i);
+    if(i<=1){
+      const bk=i===0?'imp':'play';
+      renderSubBar(bk);
+      // sync sub-others
+      for(let j=0;j<subOtherCount[bk];j++){
+        const key=-(j+1);
+        if(SUB_SEL[bk][key]===undefined) continue;
+        const rowId=bk+'-sub-oth-'+j;
+        const aw=document.getElementById(rowId+'-ai-wrap');
+        const pv=document.getElementById(rowId+'-pv');
+        if(isAmt){ if(aw) aw.style.display='flex'; if(pv) pv.style.display='none'; }
+        else { if(aw) aw.style.display='none'; if(pv){ pv.style.display='inline'; pv.textContent=(SUB_SEL[bk][key]||0)+'%'; } }
+      }
+    }
+  });
+  // Sync custom cats
+  Object.keys(CUSTOM_CATS).forEach(k=>{
+    const aw=document.getElementById('cc-'+k+'-amt-wrap');
+    const pv=document.getElementById('cc-'+k+'-pv');
+    if(isAmt){ if(aw) aw.style.display='flex'; if(pv) pv.style.display='none'; }
+    else { if(aw) aw.style.display='none'; if(pv){ pv.style.display='inline'; pv.textContent='—'; } }
+  });
+
+  renderCatBar();
+}
+
+function updateAnnualSlider(total){
+  const slider=document.getElementById('annual-s');
+  slider.step=1;
+  const val=Math.min(51000,Math.round(total));
+  slider.value=val;
+  document.getElementById('annual-v').textContent=fmtAnnual(val);
+}
+
+// Init sub-bars on load
+function initSubBars(){
+  ['imp','play'].forEach(bk=>{
+    const leg=document.getElementById(bk+'-leg');
+    if(leg) leg.innerHTML='';
+  });
+}
+
+function initBar(barId,legId,opts,sel,onChangeCb){
+  const leg=document.getElementById(legId);
+  leg.innerHTML='';
+  opts.forEach((o,i)=>{
+    const row=document.createElement('div');
+    row.className='leg-row';
+    row.id=legId+'-r'+i;
+    row.innerHTML=`
+      <div class="leg-check" id="${legId}-chk${i}"></div>
+      <div class="leg-dot" style="background:${o.c}"></div>
+      <span style="flex:1">${o.l}</span>
+      <span class="leg-pct-val" id="${legId}-pv${i}" style="display:none;min-width:36px;text-align:right;font-size:14px;font-weight:700;color:var(--content-primary)">—</span>`;
+    row.onclick=(e)=>{
+      if(e.target.type==='range'||e.target.type==='number') return;
+      toggleBar(sel,opts,i,barId,legId);
+      if(onChangeCb) onChangeCb();
+    };
+    leg.appendChild(row);
+  });
+  renderBar(barId,legId,opts,sel);
+}
+
+function toggleBar(sel,opts,idx,barId,legId){
+  const o=opts[idx];
+  if(sel[idx]!==undefined){
+    delete sel[idx];
+    rebalance(sel);
+  } else {
+    if(o.excl){
+      Object.keys(sel).forEach(k=>{ delete sel[k]; });
+      sel[idx]=100;
+    } else {
+      const exIdx=opts.findIndex(x=>x.excl);
+      if(exIdx>=0){ delete sel[exIdx]; }
+      sel[idx]=1;
+      rebalance(sel);
+    }
+  }
+  renderBar(barId,legId,opts,sel);
+}
+
+function rebalance(sel){
+  const keys=Object.keys(sel).map(Number);
+  if(!keys.length) return;
+  const n=keys.length;
+  const base=Math.floor(100/n);
+  const rem=100-base*n;
+  keys.forEach((k,i)=>{ sel[k]=base+(i===0?rem:0); });
+}
+
+function onPctDrag(legId,barId,selKey,idx){
+  const sel=selKey==='prac'?PRAC_SEL:{};
+  const opts=selKey==='prac'?PRAC_OPTS:[];
+  const newPct=parseInt(document.getElementById(legId+'-ps'+idx).value);
+  const keys=Object.keys(sel).map(Number);
+  const others=keys.filter(k=>k!==idx);
+  if(!others.length){ sel[idx]=100; renderBar(barId,legId,opts,sel); return; }
+  const remaining=100-newPct;
+  const total=others.reduce((a,k)=>a+sel[k],0);
+  if(total===0){ others.forEach(k=>sel[k]=Math.floor(remaining/others.length)); }
+  else{ others.forEach(k=>sel[k]=Math.max(1,Math.round(sel[k]/total*remaining))); }
+  sel[idx]=newPct;
+  const sum=Object.values(sel).reduce((a,b)=>a+b,0);
+  if(sum!==100) sel[keys[0]]+=100-sum;
+  renderBar(barId,legId,opts,sel);
+}
+
+function renderBar(barId,legId,opts,sel){
+  const bar=document.getElementById(barId);
+  if(barId==='prac-bar'){
+    const keys=Object.keys(sel).map(Number);
+    if(!keys.length){
+      bar.innerHTML='<div class="bar-empty">Select categories below</div>';
+    } else {
+      // Normalise percents to exactly sum 100
+      const rawTotal=keys.reduce((a,k)=>a+sel[k],0)||1;
+      const pcts=keys.map(k=>sel[k]/rawTotal*100);
+      // Fix rounding so sum is exactly 100
+      const rounded=pcts.map(p=>Math.floor(p));
+      let rem=100-rounded.reduce((a,b)=>a+b,0);
+      pcts.forEach((_,i)=>{ if(rem>0){rounded[i]++;rem--;} });
+
+      let cursor=0;
+      bar.innerHTML=keys.map((k,pos)=>{
+        const pct=rounded[pos];
+        const left=cursor;
+        cursor+=pct;
+        const label=opts[k].l;
+        const isLast=(pos===keys.length-1);
+        const handle=isLast?'':
+          `<div class="bar-handle" data-idx="${pos}"
+            onmousedown="startBarDrag(event,'prac-bar','prac-leg',${pos})"
+            ontouchstart="startBarDrag(event,'prac-bar','prac-leg',${pos})"></div>`;
+        const inner=pct>14
+          ? `<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:1;min-width:0">${label}</span><span style="flex-shrink:0;opacity:.85;font-size:11px;font-weight:700">${pct}%</span>`
+          : pct>5 ? `<span style="font-size:11px;font-weight:700">${pct}%</span>` : '';
+        return`<div class="bar-seg" style="left:${left}%;width:${pct}%;background:${opts[k].c}">${inner}${handle}</div>`;
+      }).join('');
+    }
+  }
+  // Update legend — same for prac and spend: show pct text, no slider
+  opts.forEach((o,i)=>{
+    const chk=document.getElementById(legId+'-chk'+i);
+    const pv=document.getElementById(legId+'-pv'+i);
+    const row=document.getElementById(legId+'-r'+i);
+    const isSel=sel[i]!==undefined;
+    if(chk) chk.textContent=isSel?'✓':'';
+    if(row) row.classList.toggle('sel',isSel);
+    if(pv){
+      pv.style.display=isSel?'inline':'none';
+      if(isSel) pv.textContent=sel[i]+'%';
+    }
+  });
+}
+
+// ── Part 4 tabs ──
+function switchPpvCoachTab(t){
+  ['t1','t2'].forEach(x=>{
+    document.getElementById('ppv-coach-'+x).classList.toggle('active',x===t);
+    document.getElementById('ppv-coach-p-'+x).style.display=x===t?'':'none';
+  });
+}
+function switchPpvRealTab(t){
+  ['t1','t2'].forEach(x=>{
+    document.getElementById('ppv-real-'+x).classList.toggle('active',x===t);
+    document.getElementById('ppv-real-p-'+x).style.display=x===t?'':'none';
+  });
+}
+function switchSubTab(t){
+  ['t2','t3'].forEach(x=>{
+    document.getElementById('sub-t-'+x).classList.toggle('active',x===t);
+    document.getElementById('sub-p-'+x).style.display=x===t?'':'none';
+  });
+}
+function switchCoachTab(t){
+  ['c1','c2'].forEach(x=>{
+    document.getElementById('coach-t-'+x).classList.toggle('active',x===t);
+    document.getElementById('coach-p-'+x).style.display=x===t?'':'none';
+  });
+}
+
+// ── Navigation ──
+let cur=1;
+const TOTAL=6;
+function goTo(n){
+  document.getElementById(cur<=TOTAL?'sec-'+cur:'sec-done').classList.remove('active');
+  cur=n;
+  const isDone=n>TOTAL;
+  document.getElementById(isDone?'sec-done':'sec-'+n).classList.add('active');
+  updateProg(n,isDone);
+  updateSidebar(n,isDone);
+  if(isDone) buildChips();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function updateProg(n,done){
+  const pct=done?100:Math.round((n/TOTAL)*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-lbl').textContent=done?'Complete':n+' / '+TOTAL;
+}
+function updateSidebar(n,done){
+  for(let i=1;i<=TOTAL;i++){
+    const item=document.getElementById('nav-'+i);
+    const num=document.getElementById('sn-'+i);
+    item.classList.toggle('active',i===n&&!done);
+    item.classList.toggle('done',i<n||done);
+    num.textContent=(i<n||done)?'✓':i;
+  }
+}
+
+function submitSurvey(){
+  const keys=['sub-t2','sub-t3','coach-c1','coach-c2','ppv-gen','ppv-coach1','ppv-coach2','real-c1','real-c2'];
+  const names=['Tier 2 Sub.','Tier 3 Sub.','Coach T1','Coach T2','Gen. PPV','Coach T1 PPV','Coach T2 PPV','Real T1 (10m)','Real T2 (10m)'];
+  const el=document.getElementById('psm-results');
+  el.style.display='grid';
+  el.innerHTML=keys.map((k,i)=>`
+    <div class="res-card">
+      <div class="res-title">${names[i]}</div>
+      <div class="psm-sum">
+        ${PSM_META.map((m,j)=>`
+          <div class="psm-sum-row">
+            <div class="psm-sum-dot" style="background:${m.c}"></div>
+            <div class="psm-sum-lbl">${['Too cheap','Good value','Pricey','Too exp.'][j]}</div>
+            <div class="psm-sum-val">${fmtPsm(PSM[k][j],PSM_CFG[k])}</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+  goTo(7);
+}
+
+function buildChips(){
+  const chips=document.getElementById('sum-chips');
+  const age=document.getElementById('age-s').value;
+  const yrs=document.getElementById('yrs-v').textContent;
+  const freq=document.getElementById('freq-v').textContent;
+  const annual=document.getElementById('annual-v').textContent;
+  const sex=document.querySelector('#g-sex .sel')?.dataset.v||'—';
+  chips.innerHTML=[sex,age+' yrs',yrs+' golf',freq+' practice',annual+'/yr']
+    .map(r=>`<div class="chip">${r}</div>`).join('');
+}
+
+// ── Check on-course ──
+function checkCourse(){
+  const has=PRAC_OPTS.some((o,i)=>o.l.includes('course')&&PRAC_SEL[i]!==undefined);
+  document.getElementById('cond-course').classList.toggle('show',has);
+  if(!has){
+    document.getElementById('cond-level').classList.add('show');
+    document.getElementById('cond-score-input').classList.remove('show');
+  }
+}
+
+// ── Init ──
+initBar('prac-bar','prac-leg',PRAC_OPTS,PRAC_SEL,checkCourse);
+initSubBars();
+Object.keys(PSM_CFG).forEach(k=>buildPsm(k));
+onAgeChange();
+</script>
+</body>
+</html>
