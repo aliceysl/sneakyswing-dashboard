@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SneakySwing — User Journey Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',system-ui,sans-serif;background:#e8ebe8;min-height:100vh;padding:24px 16px;display:flex;justify-content:center}
+.db{width:100%;max-width:1100px;background:#f0f2f0;border-radius:16px;overflow:hidden;padding-bottom:20px}
+.hdr{background:#1a2e12;padding:16px 20px;display:flex;align-items:center;gap:16px}
+.hdr-accent{width:6px;height:44px;background:#719342;border-radius:3px;flex-shrink:0}
+.hdr-title{font-size:18px;font-weight:700;color:#fff;line-height:1.2}
+.hdr-sub{font-size:12px;color:#9db88a;margin-top:2px}
+.hdr-pills{margin-left:auto;display:flex;gap:8px}
+.hdr-pill{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:10px;padding:6px 14px;text-align:center}
+.hdr-pill .pv{font-size:15px;font-weight:700;line-height:1}
+.hdr-pill .pl{font-size:10px;color:#9db88a;margin-top:2px}
+.body{padding:14px 14px 0;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.45fr);gap:12px}
+@media(max-width:720px){.body{grid-template-columns:1fr}.right-top{grid-template-columns:1fr!important}.drop-grid{grid-template-columns:1fr!important}.hdr-pills{display:none}}
+.card{background:#fff;border-radius:14px;border:0.5px solid #d0d8cf;overflow:hidden}
+.card-hdr{padding:14px 16px 10px;border-bottom:0.5px solid #e8ece7}
+.card-title{font-size:13px;font-weight:700;color:#2d4a1e}
+.card-sub{font-size:11px;color:#828282;margin-top:2px}
+.right-col{display:flex;flex-direction:column;gap:12px}
+.right-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:12px}
+.funnel-body{padding:10px 14px 6px}
+.f-seg-label{font-size:10px;font-weight:700;color:#828282;letter-spacing:.6px;text-transform:uppercase;margin:8px 0 6px;padding:0 2px}
+.f-row{display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:8px;cursor:pointer;transition:background .15s}
+.f-row:hover{background:#f0f5ee}
+.f-row.active{background:#e8f3d8}
+.f-step{font-size:11px;font-weight:700;color:#9db88a;width:18px;flex-shrink:0;text-align:center}
+.f-label{font-size:12px;color:#4e4e4e;width:130px;flex-shrink:0}
+.f-bar-wrap{flex:1;background:#e8ece6;border-radius:9999px;height:10px;overflow:hidden}
+.f-bar{height:100%;border-radius:9999px;width:0;transition:width 1s cubic-bezier(.4,0,.2,1)}
+.f-count{font-size:12px;font-weight:700;width:32px;text-align:right;flex-shrink:0}
+.f-pct{font-size:11px;width:40px;text-align:right;flex-shrink:0;color:#828282}
+.f-drop{display:flex;align-items:center;padding:3px 6px 3px 32px;gap:6px}
+.f-drop-chip{font-size:10px;font-weight:600;padding:2px 8px;border-radius:9999px}
+.chip-g{background:#e8f3d8;color:#3b6d11}
+.chip-r{background:#fef2f2;color:#991b1b}
+.divider{height:0.5px;background:#e8ece7;margin:10px 14px}
+.detail-panel{background:#f5f8f4;border-top:0.5px solid #d0d8cf;padding:12px 16px;display:none}
+.detail-panel.show{display:block}
+.dp-title{font-size:12px;font-weight:700;color:#2d4a1e;margin-bottom:6px}
+.dp-row{display:flex;justify-content:space-between;font-size:11px;color:#4e4e4e;margin-bottom:3px}
+.dp-key{color:#828282}
+.donut-grid{display:flex;gap:8px;justify-content:space-around;padding:12px 8px}
+.donut-item{display:flex;flex-direction:column;align-items:center;gap:6px}
+.donut-wrap{position:relative;width:72px;height:72px}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.donut-pct{font-size:14px;font-weight:700;line-height:1}
+.donut-cnt{font-size:10px;color:#828282;line-height:1;margin-top:1px}
+.donut-lbl{font-size:11px;color:#4e4e4e;text-align:center;line-height:1.3}
+.insight{background:#e8f3d8;border-left:3px solid #719342;border-radius:0 8px 8px 0;margin:0 12px 12px;padding:9px 12px}
+.insight-t{font-size:12px;font-weight:700;color:#27500a}
+.insight-b{font-size:11px;color:#3b6d11;margin-top:3px}
+.drop-grid{padding:12px 14px 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.drop-card{border-radius:12px;border:1px solid;overflow:hidden;cursor:pointer;transition:transform .15s}
+.drop-card:hover{transform:translateY(-2px)}
+.drop-card.sev-r{background:#fef2f2;border-color:#fca5a5}
+.drop-card.sev-y{background:#fbf8ee;border-color:#ffe99f}
+.dc-top{padding:8px 12px;font-size:10px;font-weight:700;color:#fff;display:flex;align-items:center;justify-content:space-between}
+.dc-top.bg-r{background:#ef4444}
+.dc-top.bg-y{background:#a88d37}
+.dc-body{padding:10px 12px}
+.dc-lost{font-size:20px;font-weight:700;line-height:1;margin-bottom:4px}
+.dc-lost.cr{color:#ef4444}
+.dc-lost.cy{color:#a88d37}
+.dc-arrow{font-size:10px;font-weight:700;padding:3px 8px;border-radius:9999px;display:inline-block;margin-bottom:6px}
+.dc-arrow.ar{background:#fecaca;color:#991b1b}
+.dc-arrow.ay{background:#ffe99f;color:#92400e}
+.dc-desc{font-size:11px;color:#4e4e4e;line-height:1.6;display:none}
+.drop-card:hover .dc-desc{display:block}
+.dc-hint{font-size:10px;color:#828282}
+.drop-card:hover .dc-hint{display:none}
+.footer{margin:16px 14px 0;display:flex;align-items:center;justify-content:space-between}
+.footer-txt{font-size:11px;color:#828282}
+</style>
+</head>
+<body>
+<div class="db">
+  <div class="hdr">
+    <div class="hdr-accent"></div>
+    <div>
+      <div class="hdr-title">User Journey Dashboard</div>
+      <div class="hdr-sub">SneakySwing &nbsp;·&nbsp; Mar 18 – Apr 9, 2026 &nbsp;·&nbsp; Excl. test accounts</div>
+    </div>
+    <div class="hdr-pills">
+      <div class="hdr-pill"><div class="pv" style="color:#fff">386</div><div class="pl">Total Opens</div></div>
+      <div class="hdr-pill"><div class="pv" style="color:#b8d085">281</div><div class="pl">Registered</div></div>
+      <div class="hdr-pill"><div class="pv" style="color:#fca5a5">125</div><div class="pl">AI Activated</div></div>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="card">
+      <div class="card-hdr">
+        <div class="card-title">User Journey Funnel</div>
+        <div class="card-sub">Click any step to inspect &nbsp;·&nbsp; n=386</div>
+      </div>
+      <div class="funnel-body">
+        <div class="f-seg-label">Acquisition &amp; Activation</div>
+        <div class="f-row" onclick="selectStep(0)">
+          <div class="f-step">①</div>
+          <div class="f-label">App opened</div>
+          <div class="f-bar-wrap"><div class="f-bar" style="background:#719342" data-pct="100"></div></div>
+          <div class="f-count" style="color:#719342">386</div>
+          <div class="f-pct">100%</div>
+        </div>
+        <div class="f-drop"><div class="f-drop-chip chip-g">↓ −45 users &nbsp; 11.7% drop</div></div>
+        <div class="f-row" onclick="selectStep(1)">
+          <div class="f-step">②</div>
+          <div class="f-label">Consent agreed</div>
+          <div class="f-bar-wrap"><div class="f-bar" style="background:#719342" data-pct="88.3"></div></div>
+          <div class="f-count" style="color:#719342">341</div>
+          <div class="f-pct">88.3%</div>
+        </div>
+        <div class="f-drop"><div class="f-drop-chip chip-g">↓ −60 users &nbsp; 17.6% drop</div></div>
+        <div class="f-row" onclick="selectStep(2)">
+          <div class="f-step">③</div>
+          <div class="f-label">Registration done</div>
+          <div class="f-bar-wrap"><div class="f-bar" style="background:#719342" data-pct="72.8"></div></div>
+          <div class="f-count" style="color:#719342">281</div>
+          <div class="f-pct">72.8%</div>
+        </div>
+        <div class="f-drop"><div class="f-drop-chip chip-r">↓ −156 users &nbsp; 55.5% drop &nbsp; ⚠</div></div>
+        <div class="f-row" onclick="selectStep(3)">
+          <div class="f-step">④</div>
+          <div class="f-label">AI analysis done</div>
+          <div class="f-bar-wrap"><div class="f-bar" style="background:#ef4444" data-pct="32.4"></div></div>
+          <div class="f-count" style="color:#ef4444">125</div>
+          <div class="f-pct" style="color:#ef4444">32.4%</div>
+        </div>
+        <div class="divider"></div>
+        <div class="f-seg-label">In-Report Journey</div>
+        <div class="f-row" onclick="selectStep(4)">
+          <div class="f-step">⑤</div>
+          <div class="f-label">Report entry</div>
+          <div class="f-bar-wrap"><div class="f-bar" style="background:#719342" data-pct="73.7"></div></div>
+          <div class="f-count" style="color:#719342">213</div>
+          <div class="f-pct">—</div>
+        </div>
+        <div class="f-drop"><div class="f-drop-chip chip-g">↓ −56 users &nbsp; 26.3% drop</div></div>
+        <div class="f-row" onclick="selectStep(5)">
+          <div class="f-step">⑥</div>
+          <div class="f-label">Video played</div>
+          <div class="f-bar-wrap"><div class="f-bar" style="background:#a88d37" data-pct="55.9"></div></div>
+          <div class="f-count" style="color:#a88d37">157</div>
+          <div class="f-pct">73.7%</div>
+        </div>
+        <div class="f-drop"><div class="f-drop-chip chip-r">↓ −133 users &nbsp; 84.7% drop &nbsp; ⚠</div></div>
+        <div class="f-row" onclick="selectStep(6)">
+          <div class="f-step">⑦</div>
+          <div class="f-label">Speed adjusted</div>
+          <div class="f-bar-wrap"><div class="f-bar" style="background:#ef4444" data-pct="11.3"></div></div>
+          <div class="f-count" style="color:#ef4444">24</div>
+          <div class="f-pct" style="color:#ef4444">11.3%</div>
+        </div>
+      </div>
+      <div class="detail-panel" id="detail-panel">
+        <div class="dp-title" id="dp-title"></div>
+        <div id="dp-content"></div>
+      </div>
+    </div>
+
+    <div class="right-col">
+      <div class="right-top">
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">AI Report Engagement</div>
+            <div class="card-sub">Post-analysis behaviour</div>
+          </div>
+          <div class="donut-grid">
+            <div class="donut-item">
+              <div class="donut-wrap">
+                <canvas id="d0" width="72" height="72"></canvas>
+                <div class="donut-center"><div class="donut-pct" style="color:#719342">100%</div><div class="donut-cnt">126</div></div>
+              </div>
+              <div class="donut-lbl">Analysis<br>Completed</div>
+            </div>
+            <div class="donut-item">
+              <div class="donut-wrap">
+                <canvas id="d1" width="72" height="72"></canvas>
+                <div class="donut-center"><div class="donut-pct" style="color:#a88d37">17.5%</div><div class="donut-cnt">22</div></div>
+              </div>
+              <div class="donut-lbl">Card<br>Praised</div>
+            </div>
+            <div class="donut-item">
+              <div class="donut-wrap">
+                <canvas id="d2" width="72" height="72"></canvas>
+                <div class="donut-center"><div class="donut-pct" style="color:#ef4444">5.6%</div><div class="donut-cnt">7</div></div>
+              </div>
+              <div class="donut-lbl">Rating<br>Submitted</div>
+            </div>
+          </div>
+          <div class="insight">
+            <div class="insight-t">82.5% exit with zero interaction</div>
+            <div class="insight-b">Only 17.5% praise a card &nbsp;·&nbsp; 5.6% rate</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hdr">
+            <div class="card-title">Avg Session Duration</div>
+            <div class="card-sub">Minutes per day &nbsp;·&nbsp; red = outlier</div>
+          </div>
+          <div style="padding:10px 14px 12px">
+            <div style="position:relative;height:160px">
+              <canvas id="sessChart"></canvas>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap">
+              <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:#828282"><span style="width:10px;height:10px;border-radius:2px;background:#719342;display:inline-block"></span>Normal (≥8m)</span>
+              <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:#828282"><span style="width:10px;height:10px;border-radius:2px;background:#b8d085;display:inline-block"></span>Low (&lt;8m)</span>
+              <span style="display:flex;align-items:center;gap:4px;font-size:11px;color:#828282"><span style="width:10px;height:10px;border-radius:2px;background:#ef4444;display:inline-block"></span>Outlier (&gt;20m)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-hdr">
+          <div class="card-title">Top 3 drop-off points</div>
+          <div class="card-sub">Hover each card for detail</div>
+        </div>
+        <div class="drop-grid">
+          <div class="drop-card sev-r">
+            <div class="dc-top bg-r"><span>#1 Critical</span><span>55.5%</span></div>
+            <div class="dc-body">
+              <div class="dc-lost cr">−156 users</div>
+              <div class="dc-arrow ar">Registration → AI Analysis</div>
+              <div class="dc-hint">Hover to see insight</div>
+              <div class="dc-desc">Over half of registered users never reach their first AI analysis. The Aha moment is missing. This is the #1 activation priority — users register but never experience the product's core value.</div>
+            </div>
+          </div>
+          <div class="drop-card sev-y">
+            <div class="dc-top bg-y"><span>#2 High</span><span>84.7%</span></div>
+            <div class="dc-body">
+              <div class="dc-lost cy">−133 users</div>
+              <div class="dc-arrow ay">Report Entry → Speed Adjust</div>
+              <div class="dc-hint">Hover to see insight</div>
+              <div class="dc-desc">Users open the report but almost nobody explores video in depth. Only 11.3% of video viewers adjust playback speed. Entry to deep engagement is severely disconnected.</div>
+            </div>
+          </div>
+          <div class="drop-card sev-y">
+            <div class="dc-top bg-y"><span>#3 Medium</span><span>27.2%</span></div>
+            <div class="dc-body">
+              <div class="dc-lost cy">−105 users</div>
+              <div class="dc-arrow ay">App Open → Registration</div>
+              <div class="dc-hint">Hover to see insight</div>
+              <div class="dc-desc">1 in 4 users opens the app but never completes registration. Friction exists in the onboarding flow — consent, form fields, or unclear value proposition before sign-up.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-txt">SneakySwing Analytics &nbsp;·&nbsp; Apr 9, 2026 &nbsp;·&nbsp; Confidential</div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const stepDetails=[
+  {title:"① App opened — 386 users",rows:[["Total opens","386"],["Baseline","100%"],["Source","Organic / referral / direct"]]},
+  {title:"② Consent agreed — 341 users",rows:[["Agreed","341 (88.3%)"],["Dropped","45 users (11.7%)"],["Signal","Low friction at consent step"]]},
+  {title:"③ Registration done — 281 users",rows:[["Registered","281 (72.8% of opens)"],["Dropped","60 users (17.6%)"],["Note","Onboarding friction — review form fields"]]},
+  {title:"④ AI analysis done — 125 users ⚠",rows:[["Completed","125 (44.5% of registered)"],["Dropped","156 users — 55.5% drop"],["Priority","#1 Critical — activation gap"]]},
+  {title:"⑤ Report entry — 213 users",rows:[["Entered report","213"],["Of all opens","55.2%"],["Note","More than AI completions — some view without generating"]]},
+  {title:"⑥ Video played — 157 users",rows:[["Played video","157 (73.7% of report entries)"],["Dropped","56 users (26.3%)"],["Signal","Video play CTA may need more prominence"]]},
+  {title:"⑦ Speed adjusted — 24 users ⚠",rows:[["Adjusted speed","24 (11.3% of video viewers)"],["Dropped","133 users — 84.7% drop"],["Priority","#2 High — deep engagement gap"]]},
+];
+let activeStep=null;
+function selectStep(idx){
+  const rows=document.querySelectorAll('.f-row');
+  const panel=document.getElementById('detail-panel');
+  if(activeStep===idx){activeStep=null;rows.forEach(r=>r.classList.remove('active'));panel.classList.remove('show');return;}
+  activeStep=idx;
+  rows.forEach(r=>r.classList.remove('active'));
+  rows[idx].classList.add('active');
+  const d=stepDetails[idx];
+  document.getElementById('dp-title').textContent=d.title;
+  document.getElementById('dp-content').innerHTML=d.rows.map(r=>`<div class="dp-row"><span class="dp-key">${r[0]}</span><span>${r[1]}</span></div>`).join('');
+  panel.classList.add('show');
+}
+setTimeout(()=>{document.querySelectorAll('.f-bar').forEach(b=>{b.style.width=b.dataset.pct+'%';});},120);
+const mkDonut=(id,pct,color)=>new Chart(document.getElementById(id),{type:'doughnut',data:{datasets:[{data:[pct,100-pct],backgroundColor:[color,'#e8ece6'],borderWidth:0,hoverOffset:0}]},options:{responsive:false,cutout:'68%',plugins:{legend:{display:false},tooltip:{enabled:false}},animation:{animateRotate:true,duration:900}}});
+mkDonut('d0',100,'#719342');mkDonut('d1',17.5,'#a88d37');mkDonut('d2',5.6,'#ef4444');
+const dates=["3/18","3/20","3/22","3/24","3/26","3/28","3/30","4/1","4/3","4/4","4/6","4/8"];
+const vals=[5,4,6,7,8,7,9,8,31,26,7,8];
+new Chart(document.getElementById('sessChart'),{type:'bar',data:{labels:dates,datasets:[{data:vals,backgroundColor:vals.map(v=>v>20?'#ef4444':v>=8?'#719342':'#b8d085'),borderRadius:4,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.raw} min${ctx.raw>20?' (outlier)':''}`},backgroundColor:'#1a2e12',titleColor:'#9db88a',bodyColor:'#fff',padding:8,cornerRadius:8}},scales:{x:{ticks:{font:{size:10},color:'#828282',maxRotation:40,autoSkip:false},grid:{display:false},border:{color:'#d0d8cf'}},y:{ticks:{font:{size:10},color:'#828282',callback:v=>v+'m'},grid:{color:'rgba(0,0,0,0.05)'},border:{display:false},max:35}}}});
+</script>
+</body>
+</html>
